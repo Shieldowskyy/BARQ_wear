@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Default language: English (en)
+    To add a new language:
+    1. Create folder: app/src/main/res/values-<code>/ (e.g. values-de, values-es, values-fr)
+    2. Copy this strings.xml file into that folder and translate the values
+    3. Register the language code in AppLocale.kt and res/xml/locales_config.xml
+-->
+<resources>
+    <string name="app_name">BARQ!</string>
+    <string name="app_title_wear">BARQ! Wear</string>
+
+    <!-- Login & QR Auth -->
+    <string name="qr_status_init">Initializing QR code…</string>
+    <string name="qr_status_generating">Generating BARQ! QR code…</string>
+    <string name="qr_status_scan_prompt">Scan in the BARQ! app\n(Menu → Scan QR Code)</string>
+    <string name="qr_status_approved">Approved! Logging in…</string>
+    <string name="qr_status_rejected_hint">Tap Refresh to generate a new code</string>
+    <string name="qr_status_error">QR login error</string>
+    <string name="qr_status_fetch_failed">Failed to fetch QR code</string>
+    <string name="qr_status_verifying_token">Verifying token…</string>
+    <string name="auth_err_rejected">Authorization rejected in BARQ! app</string>
+    <string name="auth_err_connection">Connection error with auth.barq.app</string>
+    <string name="auth_err_token_invalid">Token invalid or expired: %1$s</string>
+    <string name="auth_err_token_format">Invalid token format</string>
+    <string name="login_qr_content_desc">BARQ! QR Code</string>
+    <string name="login_tap_to_shrink">Tap to shrink</string>
+    <string name="login_tap_to_enlarge">Tap QR to enlarge</string>
+    <string name="login_refresh_qr">New QR code</string>
+    <string name="login_paste_token">Paste token (ory_at/rt)</string>
+    <string name="login_token_input_label">Paste ory_at_… or ory_rt_…</string>
+
+    <!-- Nearby Screen -->
+    <string name="nearby_title">BARQ! Nearby</string>
+    <string name="nearby_title_ad">BARQ! (AD 18+)</string>
+    <string name="nearby_subtitle_closest">Closest first (km)</string>
+    <string name="nearby_cd_filters">Filters &amp; Search</string>
+    <string name="nearby_cd_update_gps">Update GPS</string>
+    <string name="nearby_cd_refresh">Refresh</string>
+    <string name="nearby_cd_my_profile">My Profile</string>
+    <string name="nearby_gps_missing_set_city">No GPS • Set city manually</string>
+    <string name="nearby_city_change_fmt">%1$s (Change)</string>
+    <string name="nearby_set_location">Set location / City</string>
+    <string name="nearby_searching_query_fmt">Searching: \"%1$s\"</string>
+    <string name="nearby_active_filters_fmt">Active filters: %1$d (Clear)</string>
+    <string name="nearby_clear_filters_cd">Clear filters</string>
+    <string name="nearby_loading_profiles">Looking for furs…</string>
+    <string name="nearby_retry">Try again</string>
+    <string name="nearby_empty_results">No results nearby 🐾\nChange filters or update GPS.</string>
+    <string name="nearby_error_fetch_profiles">Failed to load profiles</string>
+    <string name="nearby_traveling_cd">Traveling</string>
+
+    <!-- GPS & Manual Location -->
+    <string name="gps_fetching">Fetching GPS location…</string>
+    <string name="gps_missing_manual">No GPS – set city manually</string>
+    <string name="gps_status_fmt">GPS: %1$s</string>
+    <string name="gps_api_error_fmt">GPS API error: %1$s</string>
+    <string name="gps_error_fmt">GPS error: %1$s</string>
+    <string name="city_status_fmt">City: %1$s</string>
+    <string name="location_unknown">Unknown location</string>
+    <string name="location_title">Location / City</string>
+    <string name="location_current_fmt">Current: %1$s</string>
+    <string name="location_search_placeholder">Search city…</string>
+    <string name="location_searching_fmt">Searching: %1$s</string>
+    <string name="location_input_label">Enter city (e.g. London)</string>
+    <string name="location_use_watch_gps">Use watch GPS</string>
+    <string name="location_searching_cities">Searching cities…</string>
+    <string name="location_found_cities_fmt">Found cities (%1$d)</string>
+    <string name="location_unknown_city">Unknown city</string>
+    <string name="location_no_cities_for_fmt">No cities found for \"%1$s\"</string>
+    <string name="location_search_error">Failed to search cities</string>
+
+    <!-- Search Filters -->
+    <string name="filters_title">Search Filters</string>
+    <string name="filters_active_count_fmt">Active: %1$d</string>
+    <string name="filters_location_title">Location / City</string>
+    <string name="filters_location_set_manual">Set city manually</string>
+    <string name="filters_search_by_name">Search by name…</string>
+    <string name="filters_name_fmt">Name: %1$s</string>
+    <string name="filters_name_input_label">Display name</string>
+    <string name="filters_clear_name">Clear name</string>
+    <string name="filters_group_age">Age</string>
+    <string name="filters_age_min_short">Min</string>
+    <string name="filters_age_max_short">Max</string>
+    <string name="filters_age_min_title">Minimum Age (Min)</string>
+    <string name="filters_age_max_title">Maximum Age (Max)</string>
+    <string name="filters_age_years_fmt">%1$d yrs</string>
+    <string name="filters_age_any">Any</string>
+    <string name="filters_age_no_limit">No limit (Any)</string>
+    <string name="filters_age_enter_manually">Enter manually</string>
+    <string name="filters_age_less">Less</string>
+    <string name="filters_age_more">More</string>
+    <string name="filters_group_profile">Profile</string>
+    <string name="filters_genders">Genders</string>
+    <string name="filters_relationship_status">Relationship Status</string>
+    <string name="filters_sexual_orientation">Sexual Orientation</string>
+    <string name="filters_group_options">Search Options</string>
+    <string name="filters_require_profile_image">Require Profile Image</string>
+    <string name="filters_require_profile_image_sub">Only profiles with avatar</string>
+    <string name="filters_group_after_dark">After Dark (AD)</string>
+    <string name="filters_after_dark_mode">After Dark Mode (18+)</string>
+    <string name="filters_sexual_position">Sexual Position</string>
+    <string name="filters_show_results">Show results</string>
+    <string name="filters_clear_all">Clear filters</string>
+    <string name="filters_none_selected">No values selected</string>
+    <string name="filters_selected_count_fmt">Selected: %1$d</string>
+    <string name="filters_clear_selection">Clear selection</string>
+    <string name="filters_done">Done</string>
+
+    <!-- Filter Option Values -->
+    <string name="gender_female">Female</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_trans_female">Transgender Female</string>
+    <string name="gender_trans_male">Transgender Male</string>
+    <string name="gender_non_binary">Non-Binary</string>
+
+    <string name="rel_single">Single</string>
+    <string name="rel_dating">Dating</string>
+    <string name="rel_relationship">In a relationship</string>
+    <string name="rel_open_relationship">In an open relationship</string>
+    <string name="rel_polyamorous">Polyamorous</string>
+    <string name="rel_engaged_married">Engaged / married</string>
+    <string name="rel_domestic_partnership">Domestic partnership</string>
+    <string name="rel_other">Other</string>
+
+    <string name="orient_straight">Straight</string>
+    <string name="orient_bisexual">Bisexual</string>
+    <string name="orient_gay">Gay</string>
+    <string name="orient_lesbian">Lesbian</string>
+    <string name="orient_pansexual">Pansexual</string>
+    <string name="orient_asexual">Asexual</string>
+    <string name="orient_questioning">Questioning</string>
+    <string name="orient_other">Other</string>
+
+    <string name="pos_top">Top</string>
+    <string name="pos_bottom">Bottom</string>
+
+    <!-- My Account & Settings -->
+    <string name="account_default_title">My BARQ! Profile</string>
+    <string name="account_likes">Likes</string>
+    <string name="account_mutuals">Mutuals ❤️</string>
+    <string name="account_my_profile_btn">My Profile</string>
+    <string name="account_settings_btn">Settings</string>
+    <string name="account_cache_fmt">Cache: %1$s</string>
+    <string name="account_logout_btn">Log out</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_system">System Default</string>
+    <string name="settings_image_cache_title">Image Cache</string>
+    <string name="settings_image_cache_sub">Cached avatars &amp; photos</string>
+    <string name="settings_clear_cache">Clear cache</string>
+    <string name="settings_clearing_cache">Clearing…</string>
+    <string name="settings_refresh_size">Refresh size</string>
+    <string name="settings_saved_city">Saved city</string>
+    <string name="settings_no_saved_city">None selected</string>
+
+    <!-- Profile Detail & Sona Detail -->
+    <string name="profile_loading">Loading profile…</string>
+    <string name="profile_error_fetch">Failed to load profile</string>
+    <string name="profile_retry">Retry</string>
+    <string name="profile_birthday_cd">Birthday!</string>
+    <string name="profile_travel_home_fmt">✈️ Home: %1$s</string>
+    <string name="profile_section_sonas_fmt">Fursonas (%1$d)</string>
+    <string name="profile_section_about">About Me</string>
+    <string name="profile_meta_gender_fmt">Gender: %1$s</string>
+    <string name="profile_meta_status_fmt">Status: %1$s</string>
+    <string name="profile_meta_orientation_fmt">Orientation: %1$s</string>
+    <string name="profile_meta_languages_fmt">Languages: %1$s</string>
+    <string name="profile_meta_interests_fmt">Interests: %1$s</string>
+    <string name="profile_section_photos_fmt">Photos (%1$d)</string>
+    <string name="profile_like_photo_cd">Like photo</string>
+    <string name="profile_section_socials">Links &amp; Socials</string>
+    <string name="profile_social_default">Account</string>
+    <string name="profile_section_groups_fmt">Groups (%1$d)</string>
+    <string name="profile_section_events_fmt">Conventions &amp; Events (%1$d)</string>
+
+    <string name="relation_btn_mutual">Mutual ❤️ (Undo)</string>
+    <string name="relation_btn_liked">Liked 🐾 (Undo)</string>
+    <string name="relation_btn_liked_by">Like back! ✨</string>
+    <string name="relation_btn_friend">Friend ⭐</string>
+    <string name="relation_btn_like">Like profile 🐾</string>
+
+    <string name="sona_unknown_species">Unknown species</string>
+    <string name="sona_fursuit_badge">🐾 Fursuit</string>
+    <string name="sona_has_fursuit">🐾 Has a Fursuit</string>
+    <string name="sona_photos_count_fmt">%1$d img.</string>
+    <string name="sona_view_cd">View fursona</string>
+    <string name="sona_none_selected">No fursona selected</string>
+    <string name="sona_no_images">No images for this fursona</string>
+</resources>

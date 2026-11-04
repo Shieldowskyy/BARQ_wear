@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run BARQ! on Wear OS AVD (Wear_OS_Large_Round_API_34)",
+            "type": "shell",
+            "command": "${workspaceFolder}/run_wear_avd.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Wear OS Emulator Only (Wear_OS_Large_Round_API_34)",
+            "type": "shell",
+            "command": "${env:HOME}/Android/Sdk/emulator/emulator -avd Wear_OS_Large_Round_API_34 -gpu auto",
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Debug APK (gradlew assembleDebug)",
+            "type": "shell",
+            "command": "${workspaceFolder}/gradlew assembleDebug",
+            "problemMatcher": []
+        }
+    ]
+}
+

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Polish (pl) translation -->
+<resources>
+    <string name="app_name">BARQ!</string>
+    <string name="app_title_wear">BARQ! Wear</string>
+
+    <!-- Login & QR Auth -->
+    <string name="qr_status_init">Inicjowanie kodu QR…</string>
+    <string name="qr_status_generating">Generowanie kodu QR BARQ!…</string>
+    <string name="qr_status_scan_prompt">Zeskanuj w apce BARQ!\n(Menu → Scan QR Code)</string>
+    <string name="qr_status_approved">Zatwierdzono! Logowanie…</string>
+    <string name="qr_status_rejected_hint">Dotknij Odśwież, aby wygenerować nowy kod</string>
+    <string name="qr_status_error">Błąd logowania QR</string>
+    <string name="qr_status_fetch_failed">Nie udało się pobrać kodu QR</string>
+    <string name="qr_status_verifying_token">Weryfikacja tokenu…</string>
+    <string name="auth_err_rejected">Odrzucono autoryzację w aplikacji BARQ!</string>
+    <string name="auth_err_connection">Błąd połączenia z auth.barq.app</string>
+    <string name="auth_err_token_invalid">Token nieprawidłowy lub wygasł: %1$s</string>
+    <string name="auth_err_token_format">Nieprawidłowy format tokenu</string>
+    <string name="login_qr_content_desc">Kod QR BARQ!</string>
+    <string name="login_tap_to_shrink">Dotknij, aby zmniejszyć</string>
+    <string name="login_tap_to_enlarge">Dotknij QR, aby powiększyć</string>
+    <string name="login_refresh_qr">Nowy kod QR</string>
+    <string name="login_paste_token">Wklej token (ory_at/rt)</string>
+    <string name="login_token_input_label">Wklej ory_at_… lub ory_rt_…</string>
+
+    <!-- Nearby Screen -->
+    <string name="nearby_title">BARQ! W pobliżu</string>
+    <string name="nearby_title_ad">BARQ! (AD 18+)</string>
+    <string name="nearby_subtitle_closest">Od najbliższych (km)</string>
+    <string name="nearby_cd_filters">Filtry i szukanie</string>
+    <string name="nearby_cd_update_gps">Aktualizuj GPS</string>
+    <string name="nearby_cd_refresh">Odśwież</string>
+    <string name="nearby_cd_my_profile">Mój profil</string>
+    <string name="nearby_gps_missing_set_city">Brak GPS • Ustaw miasto ręcznie</string>
+    <string name="nearby_city_change_fmt">%1$s (Zmień)</string>
+    <string name="nearby_set_location">Ustaw lokalizację / Miasto</string>
+    <string name="nearby_searching_query_fmt">Szukasz: \"%1$s\"</string>
+    <string name="nearby_active_filters_fmt">Aktywne filtry: %1$d (Wyczyść)</string>
+    <string name="nearby_clear_filters_cd">Wyczyść filtry</string>
+    <string name="nearby_loading_profiles">Szukanie futrzaków…</string>
+    <string name="nearby_retry">Spróbuj ponownie</string>
+    <string name="nearby_empty_results">Brak wyników w pobliżu 🐾\nZmień filtry lub odśwież GPS.</string>
+    <string name="nearby_error_fetch_profiles">Błąd pobierania profili</string>
+    <string name="nearby_traveling_cd">W podróży</string>
+
+    <!-- GPS & Manual Location -->
+    <string name="gps_fetching">Pobieranie pozycji GPS…</string>
+    <string name="gps_missing_manual">Brak GPS – ustaw miasto ręcznie</string>
+    <string name="gps_status_fmt">GPS: %1$s</string>
+    <string name="gps_api_error_fmt">Błąd GPS API: %1$s</string>
+    <string name="gps_error_fmt">Błąd GPS: %1$s</string>
+    <string name="city_status_fmt">Miasto: %1$s</string>
+    <string name="location_unknown">Nieznana lokalizacja</string>
+    <string name="location_title">Lokalizacja / Miasto</string>
+    <string name="location_current_fmt">Aktualnie: %1$s</string>
+    <string name="location_search_placeholder">Wyszukaj miasto…</string>
+    <string name="location_searching_fmt">Szukasz: %1$s</string>
+    <string name="location_input_label">Wpisz miasto (np. Radzymin)</string>
+    <string name="location_use_watch_gps">Pobierz z GPS zegarka</string>
+    <string name="location_searching_cities">Szukanie miast…</string>
+    <string name="location_found_cities_fmt">Znalezione miasta (%1$d)</string>
+    <string name="location_unknown_city">Nieznane miasto</string>
+    <string name="location_no_cities_for_fmt">Brak miast dla \"%1$s\"</string>
+    <string name="location_search_error">Błąd wyszukiwania miast</string>
+
+    <!-- Search Filters -->
+    <string name="filters_title">Filtry wyszukiwania</string>
+    <string name="filters_active_count_fmt">Aktywne: %1$d</string>
+    <string name="filters_location_title">Lokalizacja / Miasto</string>
+    <string name="filters_location_set_manual">Ustaw miasto ręcznie</string>
+    <string name="filters_search_by_name">Szukaj po nazwie…</string>
+    <string name="filters_name_fmt">Nazwa: %1$s</string>
+    <string name="filters_name_input_label">Nazwa futrzaka (displayName)</string>
+    <string name="filters_clear_name">Wyczyść nazwę</string>
+    <string name="filters_group_age">Wiek</string>
+    <string name="filters_age_min_short">Min</string>
+    <string name="filters_age_max_short">Max</string>
+    <string name="filters_age_min_title">Wiek minimalny (Min)</string>
+    <string name="filters_age_max_title">Wiek maksymalny (Max)</string>
+    <string name="filters_age_years_fmt">%1$d lat</string>
+    <string name="filters_age_any">Dowolny</string>
+    <string name="filters_age_no_limit">Brak limitu (Dowolny)</string>
+    <string name="filters_age_enter_manually">Wpisz ręcznie</string>
+    <string name="filters_age_less">Mniej</string>
+    <string name="filters_age_more">Więcej</string>
+    <string name="filters_group_profile">Profil</string>
+    <string name="filters_genders">Płeć</string>
+    <string name="filters_relationship_status">Status związku</string>
+    <string name="filters_sexual_orientation">Orientacja</string>
+    <string name="filters_group_options">Opcje wyszukiwania</string>
+    <string name="filters_require_profile_image">Wymagaj zdjęcia</string>
+    <string name="filters_require_profile_image_sub">Tylko profile z avatarem</string>
+    <string name="filters_group_after_dark">After Dark (AD)</string>
+    <string name="filters_after_dark_mode">Tryb After Dark (18+)</string>
+    <string name="filters_sexual_position">Pozycja (AD)</string>
+    <string name="filters_show_results">Pokaż wyniki</string>
+    <string name="filters_clear_all">Wyczyść filtry</string>
+    <string name="filters_none_selected">Brak wybranych</string>
+    <string name="filters_selected_count_fmt">Wybrano: %1$d</string>
+    <string name="filters_clear_selection">Wyczyść wybór</string>
+    <string name="filters_done">Gotowe</string>
+
+    <!-- Filter Option Values -->
+    <string name="gender_female">Kobieta</string>
+    <string name="gender_male">Mężczyzna</string>
+    <string name="gender_trans_female">Trans Kobieta</string>
+    <string name="gender_trans_male">Trans Mężczyzna</string>
+    <string name="gender_non_binary">Niebinarna</string>
+
+    <string name="rel_single">Singiel</string>
+    <string name="rel_dating">Randkuje</string>
+    <string name="rel_relationship">W związku</string>
+    <string name="rel_open_relationship">W otwartym związku</string>
+    <string name="rel_polyamorous">Poliamoria</string>
+    <string name="rel_engaged_married">Zaręczony / Małżeństwo</string>
+    <string name="rel_domestic_partnership">Partnerstwo domowe</string>
+    <string name="rel_other">Inny</string>
+
+    <string name="orient_straight">Hetero</string>
+    <string name="orient_bisexual">Biseksualna</string>
+    <string name="orient_gay">Gej</string>
+    <string name="orient_lesbian">Lesbijka</string>
+    <string name="orient_pansexual">Panseksualna</string>
+    <string name="orient_asexual">Aseksualna</string>
+    <string name="orient_questioning">Szukająca</string>
+    <string name="orient_other">Inna</string>
+
+    <string name="pos_top">Top</string>
+    <string name="pos_bottom">Bottom</string>
+
+    <!-- My Account & Settings -->
+    <string name="account_default_title">Mój profil BARQ!</string>
+    <string name="account_likes">Polubienia</string>
+    <string name="account_mutuals">Mutuals ❤️</string>
+    <string name="account_my_profile_btn">Mój profil</string>
+    <string name="account_settings_btn">Ustawienia</string>
+    <string name="account_cache_fmt">Cache: %1$s</string>
+    <string name="account_logout_btn">Wyloguj</string>
+
+    <string name="settings_title">Ustawienia</string>
+    <string name="settings_language_title">Język / Language</string>
+    <string name="settings_language_system">Systemowy (Auto)</string>
+    <string name="settings_image_cache_title">Cache obrazków</string>
+    <string name="settings_image_cache_sub">Zapisane avatary i zdjęcia</string>
+    <string name="settings_clear_cache">Wyczyść cache</string>
+    <string name="settings_clearing_cache">Czyszczenie…</string>
+    <string name="settings_refresh_size">Odśwież rozmiar</string>
+    <string name="settings_saved_city">Zapisane miasto</string>
+    <string name="settings_no_saved_city">Brak wybranego</string>
+
+    <!-- Profile Detail & Sona Detail -->
+    <string name="profile_loading">Ładowanie profilu…</string>
+    <string name="profile_error_fetch">Nie udało się pobrać profilu</string>
+    <string name="profile_retry">Ponów</string>
+    <string name="profile_birthday_cd">Urodziny!</string>
+    <string name="profile_travel_home_fmt">✈️ Dom: %1$s</string>
+    <string name="profile_section_sonas_fmt">Fursony (%1$d)</string>
+    <string name="profile_section_about">O mnie</string>
+    <string name="profile_meta_gender_fmt">Płeć: %1$s</string>
+    <string name="profile_meta_status_fmt">Status: %1$s</string>
+    <string name="profile_meta_orientation_fmt">Orientacja: %1$s</string>
+    <string name="profile_meta_languages_fmt">Języki: %1$s</string>
+    <string name="profile_meta_interests_fmt">Zainteresowania: %1$s</string>
+    <string name="profile_section_photos_fmt">Zdjęcia (%1$d)</string>
+    <string name="profile_like_photo_cd">Polub zdjęcie</string>
+    <string name="profile_section_socials">Linki i Społeczności</string>
+    <string name="profile_social_default">Konto</string>
+    <string name="profile_section_groups_fmt">Grupy (%1$d)</string>
+    <string name="profile_section_events_fmt">Konwenty i Eventy (%1$d)</string>
+
+    <string name="relation_btn_mutual">Mutual ❤️ (Cofnij)</string>
+    <string name="relation_btn_liked">Polubiono 🐾 (Cofnij)</string>
+    <string name="relation_btn_liked_by">Oddaj lajka! ✨</string>
+    <string name="relation_btn_friend">Znajomy ⭐</string>
+    <string name="relation_btn_like">Polub profil 🐾</string>
+
+    <string name="sona_unknown_species">Nieznany gatunek</string>
+    <string name="sona_fursuit_badge">🐾 Fursuit</string>
+    <string name="sona_has_fursuit">🐾 Posiada Fursuit</string>
+    <string name="sona_photos_count_fmt">%1$d zdj.</string>
+    <string name="sona_view_cd">Zobacz fursonę</string>
+    <string name="sona_none_selected">Brak wybranej fursony</string>
+    <string name="sona_no_images">Brak grafik dla tej fursony</string>
+</resources>
+

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Supported locales for BARQ! Wear.
+    To add a new language to the project:
+    1. Copy app/src/main/res/values/strings.xml to app/src/main/res/values-<lang>/strings.xml
+    2. Add <locale android:name="<lang>" /> below
+    3. Add an entry to AppLanguage in AppLocale.kt
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="pl" />
+</locale-config>
+
