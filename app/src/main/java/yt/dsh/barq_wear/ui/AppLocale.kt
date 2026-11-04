@@ -1,7 +1,10 @@
 package yt.dsh.barq_wear.ui
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
+import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -60,6 +63,14 @@ object LocaleHelper {
     }
 }
 
+private tailrec fun Context.findActivityResultRegistryOwner(): ActivityResultRegistryOwner? {
+    return when (this) {
+        is ActivityResultRegistryOwner -> this
+        is ContextWrapper -> baseContext.findActivityResultRegistryOwner()
+        else -> null
+    }
+}
+
 @Composable
 fun ProvideAppLocale(
     language: AppLanguage,
@@ -67,6 +78,8 @@ fun ProvideAppLocale(
 ) {
     val baseContext = LocalContext.current
     val baseConfig = LocalConfiguration.current
+    val registryOwner = LocalActivityResultRegistryOwner.current
+        ?: baseContext.findActivityResultRegistryOwner()
 
     val (localizedContext, localizedConfig) = remember(baseContext, baseConfig, language) {
         val targetLocale = LocaleHelper.resolveLocale(language)
@@ -78,10 +91,20 @@ fun ProvideAppLocale(
         newContext to newConfig
     }
 
-    CompositionLocalProvider(
-        LocalContext provides localizedContext,
-        LocalConfiguration provides localizedConfig,
-        content = content
-    )
+    val currentRegistryOwner = registryOwner
+    if (currentRegistryOwner != null) {
+        CompositionLocalProvider(
+            LocalContext provides localizedContext,
+            LocalConfiguration provides localizedConfig,
+            LocalActivityResultRegistryOwner provides currentRegistryOwner,
+            content = content
+        )
+    } else {
+        CompositionLocalProvider(
+            LocalContext provides localizedContext,
+            LocalConfiguration provides localizedConfig,
+            content = content
+        )
+    }
 }
 
