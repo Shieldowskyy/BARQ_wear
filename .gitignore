@@ -32,6 +32,7 @@ captures/
 # Keystore files
 *.jks
 *.keystore
+BARQ_wear
 
 # OS-specific files
 .DS_Store
