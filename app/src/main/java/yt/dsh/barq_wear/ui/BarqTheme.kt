@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.rotary.onPreRotaryScrollEvent
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.material.Colors
@@ -53,16 +54,32 @@ fun BarqWearTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun Modifier.wearRotaryScroll(listState: ScalingLazyListState): Modifier {
+fun Modifier.wearRotaryScroll(
+    listState: ScalingLazyListState,
+    speedMultiplier: Float = 1.8f
+): Modifier {
     val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
-        runCatching { focusRequester.requestFocus() }
+        repeat(5) {
+            runCatching { focusRequester.requestFocus() }
+            kotlinx.coroutines.delay(80)
+        }
     }
+
     return this
-        .onRotaryScrollEvent { event ->
+        .onPreRotaryScrollEvent { event ->
+            val delta = event.verticalScrollPixels * speedMultiplier
             coroutineScope.launch {
-                listState.scrollBy(event.verticalScrollPixels)
+                listState.scrollBy(delta)
+            }
+            true
+        }
+        .onRotaryScrollEvent { event ->
+            val delta = event.verticalScrollPixels * speedMultiplier
+            coroutineScope.launch {
+                listState.scrollBy(delta)
             }
             true
         }
