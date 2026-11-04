@@ -1,3 +1,3 @@
--keep class app.barq.wear.data.** { *; }
+-keep class yt.dsh.barq_wear.data.** { *; }
 -dontwarn okhttp3.**
 

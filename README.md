@@ -94,7 +94,7 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
 3. **Install on a connected Wear OS device or emulator**:
    ```bash
    adb install -r app/build/outputs/apk/debug/app-debug.apk
-   adb shell am start -n app.barq.wear/.MainActivity
+   adb shell am start -n yt.dsh.barq_wear/.MainActivity
    ```
 
    Or use the helper script to build, boot a Wear OS AVD, install, and launch automatically:
@@ -133,7 +133,7 @@ To add a new language (for example, German `de`):
    ```xml
    <locale android:name="de" />
    ```
-4. **Add the language entry** to [`AppLanguage`](app/src/main/java/app/barq/wear/ui/AppLocale.kt) so it appears in the in-app Settings picker:
+4. **Add the language entry** to [`AppLanguage`](app/src/main/java/yt/dsh/barq_wear/ui/AppLocale.kt) so it appears in the in-app Settings picker:
    ```kotlin
    enum class AppLanguage(val code: String, val nativeLabel: String) {
        SYSTEM("system", ""),
@@ -149,7 +149,7 @@ To add a new language (for example, German `de`):
 ```text
 app/src/main/
 ├── AndroidManifest.xml
-├── java/app/barq/wear/
+├── java/yt/dsh/barq_wear/
 │   ├── MainActivity.kt              # App entry point, Coil cache config & Wear navigation host
 │   ├── data/
 │   │   ├── BarqApiClient.kt         # GraphQL queries, mutations & response parsers

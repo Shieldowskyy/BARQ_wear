@@ -1,4 +1,4 @@
-package app.barq.wear.data
+package yt.dsh.barq_wear.data
 
 import android.content.Context
 import android.graphics.Bitmap

@@ -1,4 +1,4 @@
-package app.barq.wear.ui
+package yt.dsh.barq_wear.ui
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.scrollBy

@@ -1,4 +1,4 @@
-package app.barq.wear.ui
+package yt.dsh.barq_wear.ui
 
 import android.app.RemoteInput
 import android.content.Intent
@@ -57,7 +57,7 @@ import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.input.RemoteInputIntentHelper
-import app.barq.wear.R
+import yt.dsh.barq_wear.R
 
 @Composable
 fun LoginScreen(

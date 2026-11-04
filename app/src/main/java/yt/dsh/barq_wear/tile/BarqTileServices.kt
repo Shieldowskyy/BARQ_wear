@@ -1,4 +1,4 @@
-package app.barq.wear.tile
+package yt.dsh.barq_wear.tile
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -35,14 +35,14 @@ import androidx.wear.protolayout.TimelineBuilders.TimelineEntry
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.TileBuilders.Tile
 import androidx.wear.tiles.TileService
-import app.barq.wear.MainActivity
-import app.barq.wear.R
-import app.barq.wear.data.BarqApiClient
-import app.barq.wear.data.BarqAuthManager
-import app.barq.wear.data.BarqSearchFilters
-import app.barq.wear.data.OverviewProfile
-import app.barq.wear.ui.AppLanguage
-import app.barq.wear.ui.LocaleHelper
+import yt.dsh.barq_wear.MainActivity
+import yt.dsh.barq_wear.R
+import yt.dsh.barq_wear.data.BarqApiClient
+import yt.dsh.barq_wear.data.BarqAuthManager
+import yt.dsh.barq_wear.data.BarqSearchFilters
+import yt.dsh.barq_wear.data.OverviewProfile
+import yt.dsh.barq_wear.ui.AppLanguage
+import yt.dsh.barq_wear.ui.LocaleHelper
 import coil.Coil
 import coil.request.CachePolicy
 import coil.request.ImageRequest

@@ -33,6 +33,6 @@ done
 
 echo "==> [4/4] Installing and launching BARQ! Wear OS on $SERIAL..."
 "$ADB" -s "$SERIAL" install -r "$APK_PATH"
-"$ADB" -s "$SERIAL" shell am start -n "app.barq.wear/.MainActivity"
+"$ADB" -s "$SERIAL" shell am start -n "yt.dsh.barq_wear/.MainActivity"
 
 echo "==> Done! BARQ! Wear OS is running on $SERIAL."

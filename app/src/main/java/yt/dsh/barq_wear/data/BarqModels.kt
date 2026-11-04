@@ -1,8 +1,8 @@
-package app.barq.wear.data
+package yt.dsh.barq_wear.data
 
 import android.content.Context
 import androidx.annotation.StringRes
-import app.barq.wear.R
+import yt.dsh.barq_wear.R
 
 data class UploadedImage(
     val uuid: String? = null,

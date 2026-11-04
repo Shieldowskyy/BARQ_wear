@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "app.barq.wear"
+    namespace = "yt.dsh.barq_wear"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "app.barq.wear"
+        applicationId = "yt.dsh.barq_wear"
         minSdk = 28
         targetSdk = 34
         versionCode = 1

@@ -1,4 +1,4 @@
-package app.barq.wear.data
+package yt.dsh.barq_wear.data
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement

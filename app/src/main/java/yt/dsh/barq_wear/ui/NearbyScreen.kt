@@ -1,4 +1,4 @@
-package app.barq.wear.ui
+package yt.dsh.barq_wear.ui
 
 import android.Manifest
 import android.app.RemoteInput
@@ -91,14 +91,14 @@ import androidx.wear.compose.material.ToggleChipDefaults
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.input.RemoteInputIntentHelper
-import app.barq.wear.R
-import app.barq.wear.data.BarqFilterOptions
-import app.barq.wear.data.BarqSearchFilters
-import app.barq.wear.data.FilterOption
-import app.barq.wear.data.NewsItem
-import app.barq.wear.data.OverviewProfile
-import app.barq.wear.data.Place
-import app.barq.wear.data.RelationListType
+import yt.dsh.barq_wear.R
+import yt.dsh.barq_wear.data.BarqFilterOptions
+import yt.dsh.barq_wear.data.BarqSearchFilters
+import yt.dsh.barq_wear.data.FilterOption
+import yt.dsh.barq_wear.data.NewsItem
+import yt.dsh.barq_wear.data.OverviewProfile
+import yt.dsh.barq_wear.data.Place
+import yt.dsh.barq_wear.data.RelationListType
 import coil.compose.AsyncImage
 
 @Composable

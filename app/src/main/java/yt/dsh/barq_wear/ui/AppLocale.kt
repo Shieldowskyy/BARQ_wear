@@ -1,4 +1,4 @@
-package app.barq.wear.ui
+package yt.dsh.barq_wear.ui
 
 import android.content.Context
 import android.content.res.Configuration

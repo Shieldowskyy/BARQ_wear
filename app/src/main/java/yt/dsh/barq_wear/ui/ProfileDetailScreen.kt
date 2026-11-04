@@ -1,4 +1,4 @@
-package app.barq.wear.ui
+package yt.dsh.barq_wear.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -56,10 +56,10 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
-import app.barq.wear.R
-import app.barq.wear.data.ProfileDetail
-import app.barq.wear.data.ProfileImageItem
-import app.barq.wear.data.Sona
+import yt.dsh.barq_wear.R
+import yt.dsh.barq_wear.data.ProfileDetail
+import yt.dsh.barq_wear.data.ProfileImageItem
+import yt.dsh.barq_wear.data.Sona
 import coil.compose.AsyncImage
 
 @Composable
