@@ -188,4 +188,14 @@
     <string name="sona_view_cd">View fursona</string>
     <string name="sona_none_selected">No fursona selected</string>
     <string name="sona_no_images">No images for this fursona</string>
+
+    <!-- Wear OS Tiles -->
+    <string name="tile_full_label">BARQ! Nearby (Full)</string>
+    <string name="tile_full_description">Shows up to 4 closest furs nearby with distance and quick profile access</string>
+    <string name="tile_compact_label">BARQ! Nearby (Compact)</string>
+    <string name="tile_compact_description">Compact overview of the 3 closest furs nearby</string>
+    <string name="tile_header_nearby">BARQ! Nearby</string>
+    <string name="tile_login_required">Tap to log in to BARQ!</string>
+    <string name="tile_empty_nearby">No furs cached yet • Tap to open</string>
+    <string name="tile_open_app">Open BARQ! 🐾</string>
 </resources>

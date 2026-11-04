@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Base64
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
@@ -96,6 +97,8 @@ class BarqAuthManager(context: Context) {
         private const val KEY_SAVED_PLACE_JSON = "saved_place_json"
         private const val KEY_MY_PROFILE_UUID = "my_profile_uuid"
         private const val KEY_APP_LANGUAGE = "app_language"
+        private const val KEY_CACHED_NEARBY_JSON = "cached_nearby_profiles_json"
+        private const val KEY_CACHED_NEARBY_TS = "cached_nearby_timestamp"
     }
 
     private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -166,6 +169,32 @@ class BarqAuthManager(context: Context) {
 
     fun getAppLanguageCode(): String? {
         return prefs.getString(KEY_APP_LANGUAGE, null)?.takeIf { it.isNotBlank() }
+    }
+
+    fun saveCachedNearbyProfiles(profiles: List<OverviewProfile>) {
+        val topSlice = profiles.take(6)
+        prefs.edit()
+            .putString(KEY_CACHED_NEARBY_JSON, gson.toJson(topSlice))
+            .putLong(KEY_CACHED_NEARBY_TS, System.currentTimeMillis())
+            .apply()
+    }
+
+    fun getCachedNearbyProfiles(maxAgeMs: Long = 30L * 60L * 1000L): List<OverviewProfile>? {
+        val ts = prefs.getLong(KEY_CACHED_NEARBY_TS, 0L)
+        if (ts <= 0L || System.currentTimeMillis() - ts > maxAgeMs) return null
+        val raw = prefs.getString(KEY_CACHED_NEARBY_JSON, null) ?: return null
+        return runCatching {
+            val listType = object : TypeToken<List<OverviewProfile>>() {}.type
+            gson.fromJson<List<OverviewProfile>>(raw, listType)
+        }.getOrNull()?.takeIf { it.isNotEmpty() }
+    }
+
+    fun getAnyCachedNearbyProfiles(): List<OverviewProfile> {
+        val raw = prefs.getString(KEY_CACHED_NEARBY_JSON, null) ?: return emptyList()
+        return runCatching {
+            val listType = object : TypeToken<List<OverviewProfile>>() {}.type
+            gson.fromJson<List<OverviewProfile>>(raw, listType)
+        }.getOrNull().orEmpty()
     }
 
     fun saveTokens(accessToken: String, refreshToken: String?, expiresInSeconds: Long = 3600L) {

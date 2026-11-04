@@ -19,6 +19,7 @@ import app.barq.wear.data.ProfileDetail
 import app.barq.wear.data.QrAuthSession
 import app.barq.wear.data.QrPollResult
 import app.barq.wear.data.Sona
+import app.barq.wear.tile.BarqTileRenderer
 import coil.Coil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -71,6 +72,7 @@ data class BarqUiState(
     val isLoadingProfileDetail: Boolean = false,
     val profileDetailError: String? = null,
     val isLikingProfile: Boolean = false,
+    val pendingTileProfileUuid: String? = null,
 
     val selectedSona: Sona? = null
 ) {
@@ -117,6 +119,17 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
     fun setAppLanguage(language: AppLanguage) {
         authManager.saveAppLanguageCode(language.code)
         _uiState.update { it.copy(appLanguage = language) }
+        BarqTileRenderer.notifyTilesUpdated(getApplication())
+    }
+
+    fun requestOpenProfileFromTile(uuid: String) {
+        if (uuid.isBlank()) return
+        loadProfileDetail(uuid)
+        _uiState.update { it.copy(pendingTileProfileUuid = uuid) }
+    }
+
+    fun consumePendingTileProfileUuid() {
+        _uiState.update { it.copy(pendingTileProfileUuid = null) }
     }
 
     init {
@@ -317,6 +330,8 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                 limit = limit
             ).onSuccess { list ->
                 val sorted = list.sortedBy { it.distanceKmForSort }
+                authManager.saveCachedNearbyProfiles(sorted)
+                BarqTileRenderer.notifyTilesUpdated(getApplication())
                 _uiState.update {
                     it.copy(
                         isLoadingProfiles = false,

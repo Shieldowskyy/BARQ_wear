@@ -42,6 +42,10 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
   - **English (`en`)** as the primary/default language.
   - **Polish (`pl`)** translation included out of the box.
   - In-app language switcher in **Settings** (`System Default`, `English`, `Polski`).
+- **⌚ Energy-Efficient Wear OS Tiles**:
+  - **BARQ! Nearby (Full Tile)**: Displays up to 4 closest nearby furs in a 2×2 grid with circular avatars, display names, and distance (`km`), plus a shortcut to open the app.
+  - **BARQ! Nearby (Compact Tile)**: Displays the 3 closest furs in a compact horizontal strip.
+  - **Battery-Friendly Design**: Reads from a shared local snapshot cache (`30-minute` freshness interval, zero background GPS wakeups, OLED true-black background `#000000`, and cached `56×56` circular thumbnails). Tapping any fur opens their profile directly.
 
 ---
 

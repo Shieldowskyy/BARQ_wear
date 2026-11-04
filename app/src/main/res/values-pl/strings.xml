@@ -182,5 +182,15 @@
     <string name="sona_view_cd">Zobacz fursonę</string>
     <string name="sona_none_selected">Brak wybranej fursony</string>
     <string name="sona_no_images">Brak grafik dla tej fursony</string>
+
+    <!-- Wear OS Tiles -->
+    <string name="tile_full_label">BARQ! W pobliżu (Pełny)</string>
+    <string name="tile_full_description">Pokazuje do 4 najbliższych futrzaków w okolicy z dystansem w km</string>
+    <string name="tile_compact_label">BARQ! W pobliżu (Mały)</string>
+    <string name="tile_compact_description">Kompaktowy podgląd 3 najbliższych futrzaków w okolicy</string>
+    <string name="tile_header_nearby">BARQ! W pobliżu</string>
+    <string name="tile_login_required">Dotknij, aby zalogować się w BARQ!</string>
+    <string name="tile_empty_nearby">Brak zapisanych • Dotknij, aby otworzyć</string>
+    <string name="tile_open_app">Otwórz BARQ! 🐾</string>
 </resources>
 

@@ -92,6 +92,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleDeepLinkIntent(intent: Intent?) {
+        val tileUuid = intent?.getStringExtra("tile_profile_uuid")
+        if (!tileUuid.isNullOrBlank()) {
+            viewModel.requestOpenProfileFromTile(tileUuid)
+            return
+        }
         val data = intent?.data ?: return
         if (data.scheme == "barq") {
             val accessToken = data.getQueryParameter("access_token")
@@ -124,6 +129,14 @@ fun BarqWearApp(viewModel: BarqViewModel) {
         }
 
         val navController = rememberSwipeDismissableNavController()
+
+        LaunchedEffect(uiState.pendingTileProfileUuid) {
+            val targetUuid = uiState.pendingTileProfileUuid
+            if (!targetUuid.isNullOrBlank()) {
+                viewModel.consumePendingTileProfileUuid()
+                navController.navigate("profile/$targetUuid")
+            }
+        }
 
         SwipeDismissableNavHost(
             navController = navController,

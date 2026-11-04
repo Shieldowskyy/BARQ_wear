@@ -91,5 +91,12 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.guava)
+
+    // Wear OS Tiles & ProtoLayout
+    implementation(libs.androidx.wear.tiles)
+    implementation(libs.androidx.wear.protolayout)
+    implementation(libs.androidx.wear.protolayout.material)
+    implementation(libs.androidx.wear.protolayout.expression)
 }
 
