@@ -129,14 +129,36 @@
     <string name="pos_top">Top</string>
     <string name="pos_bottom">Bottom</string>
 
+    <string name="filters_relation_type">Relacja (Mutuals / Lajki)</string>
+    <string name="rel_type_mutual">Mutuals ❤️</string>
+    <string name="rel_type_friend">Znajomi ⭐</string>
+    <string name="rel_type_liked_by">Polubili Cię ✨</string>
+    <string name="rel_type_liked">Polubione 🐾</string>
+
     <!-- My Account & Settings -->
     <string name="account_default_title">Mój profil BARQ!</string>
     <string name="account_likes">Polubienia</string>
     <string name="account_mutuals">Mutuals ❤️</string>
+    <string name="account_friends_btn">Znajomi ⭐</string>
+    <string name="account_news_btn">Aktualności 📰</string>
     <string name="account_my_profile_btn">Mój profil</string>
     <string name="account_settings_btn">Ustawienia</string>
     <string name="account_cache_fmt">Cache: %1$s</string>
     <string name="account_logout_btn">Wyloguj</string>
+
+    <!-- Relation Lists & News -->
+    <string name="relations_title_mutuals">Mutuals ❤️</string>
+    <string name="relations_title_likes">Polubienia ✨</string>
+    <string name="relations_title_friends">Znajomi ⭐</string>
+    <string name="relations_tab_mutuals">Mutuals</string>
+    <string name="relations_tab_likes">Lajki</string>
+    <string name="relations_tab_friends">Znajomi</string>
+    <string name="relations_empty">Brak profili na tej liście 🐾</string>
+    <string name="news_title">Aktualności BARQ!</string>
+    <string name="news_loading">Ładowanie aktualności…</string>
+    <string name="news_error_fetch">Błąd pobierania aktualności</string>
+    <string name="news_empty">Brak ogłoszeń</string>
+    <string name="news_loading_article">Ładowanie treści…</string>
 
     <string name="settings_title">Ustawienia</string>
     <string name="settings_ad_nsfw_section">After Dark i NSFW (18+)</string>

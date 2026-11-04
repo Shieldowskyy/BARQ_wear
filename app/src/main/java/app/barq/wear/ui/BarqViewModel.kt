@@ -13,11 +13,13 @@ import app.barq.wear.data.BarqApiClient
 import app.barq.wear.data.BarqAuthManager
 import app.barq.wear.data.BarqSearchFilters
 import app.barq.wear.data.CurrentUser
+import app.barq.wear.data.NewsItem
 import app.barq.wear.data.OverviewProfile
 import app.barq.wear.data.Place
 import app.barq.wear.data.ProfileDetail
 import app.barq.wear.data.QrAuthSession
 import app.barq.wear.data.QrPollResult
+import app.barq.wear.data.RelationListType
 import app.barq.wear.data.Sona
 import app.barq.wear.tile.BarqTileRenderer
 import coil.Coil
@@ -76,7 +78,18 @@ data class BarqUiState(
     val isLikingProfile: Boolean = false,
     val pendingTileProfileUuid: String? = null,
 
-    val selectedSona: Sona? = null
+    val selectedSona: Sona? = null,
+
+    val relationListType: RelationListType = RelationListType.MUTUALS,
+    val relationProfiles: List<OverviewProfile> = emptyList(),
+    val isLoadingRelationProfiles: Boolean = false,
+    val relationProfilesError: String? = null,
+
+    val newsItems: List<NewsItem> = emptyList(),
+    val isLoadingNews: Boolean = false,
+    val newsError: String? = null,
+    val selectedNewsItem: NewsItem? = null,
+    val isLoadingNewsDetail: Boolean = false
 ) {
     val searchQuery: String
         get() = filters.displayName
@@ -781,6 +794,113 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectSona(sona: Sona) {
         _uiState.update { it.copy(selectedSona = sona) }
+    }
+
+    fun loadRelationProfiles(type: RelationListType) {
+        _uiState.update {
+            it.copy(
+                relationListType = type,
+                isLoadingRelationProfiles = true,
+                relationProfilesError = null
+            )
+        }
+        viewModelScope.launch {
+            val state = _uiState.value
+            val place = state.currentPlace ?: state.currentUser?.profile?.location?.place
+            apiClient.fetchRelationProfiles(
+                relationListType = type,
+                isAd = state.isAdMode,
+                latitude = place?.latitude,
+                longitude = place?.longitude
+            ).onSuccess { fetched ->
+                val merged = if (type == RelationListType.LIKES) {
+                    val fromCached = state.profiles.filter {
+                        it.relationType == "likedBy" || it.relationType == "liked"
+                    }
+                    val seen = fetched.map { it.uuid }.toSet()
+                    (fetched + fromCached.filterNot { it.uuid in seen }).sortedWith(
+                        compareBy<OverviewProfile> {
+                            when (it.relationType) {
+                                "likedBy" -> 0
+                                "liked" -> 1
+                                else -> 2
+                            }
+                        }.thenBy { it.distanceKmForSort }
+                    )
+                } else {
+                    fetched
+                }
+                _uiState.update {
+                    it.copy(
+                        isLoadingRelationProfiles = false,
+                        relationProfiles = merged,
+                        relationProfilesError = null
+                    )
+                }
+            }.onFailure { err ->
+                _uiState.update {
+                    it.copy(
+                        isLoadingRelationProfiles = false,
+                        relationProfilesError = err.message ?: str(R.string.nearby_error_fetch_profiles)
+                    )
+                }
+            }
+        }
+    }
+
+    fun loadNewsItems() {
+        if (_uiState.value.isLoadingNews) return
+        _uiState.update {
+            it.copy(
+                isLoadingNews = true,
+                newsError = null
+            )
+        }
+        viewModelScope.launch {
+            apiClient.fetchNewsItems().onSuccess { items ->
+                _uiState.update {
+                    it.copy(
+                        isLoadingNews = false,
+                        newsItems = items,
+                        newsError = null
+                    )
+                }
+            }.onFailure { err ->
+                _uiState.update {
+                    it.copy(
+                        isLoadingNews = false,
+                        newsError = err.message ?: str(R.string.news_error_fetch)
+                    )
+                }
+            }
+        }
+    }
+
+    fun openNewsItem(item: NewsItem) {
+        _uiState.update {
+            it.copy(
+                selectedNewsItem = item,
+                isLoadingNewsDetail = item.content.isNullOrBlank()
+            )
+        }
+        if (item.slug.isNotBlank() && item.content.isNullOrBlank()) {
+            viewModelScope.launch {
+                apiClient.fetchNewsItemDetail(item.slug).onSuccess { fullItem ->
+                    _uiState.update { state ->
+                        val updatedList = state.newsItems.map {
+                            if (it.slug == fullItem.slug) fullItem else it
+                        }
+                        state.copy(
+                            selectedNewsItem = fullItem,
+                            newsItems = updatedList,
+                            isLoadingNewsDetail = false
+                        )
+                    }
+                }.onFailure {
+                    _uiState.update { it.copy(isLoadingNewsDetail = false) }
+                }
+            }
+        }
     }
 }
 

@@ -28,7 +28,7 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
   - **Genders** (`Female`, `Male`, `Transgender Female`, `Transgender Male`, `Non-Binary`)
   - **Relationship Status** (`Single`, `In a relationship`, `In an open relationship`, `Engaged / married`, `Domestic partnership`, `Other`)
   - **Sexual Orientation** (`Straight`, `Bisexual`, `Gay`, `Lesbian`, `Pansexual`, `Asexual`, `Questioning`, `Other`)
-  - **Search Options**: `Require Profile Image`
+  - **Search Options**: `Require Profile Image`, `Relations (Mutuals / Friends / Likes)`
   - **After Dark (18+)**: Toggle After Dark mode and filter by `Sexual Position` (`Top`, `Bottom`)
 - **👤 Full Profile, Fursona & After Dark (18+) Viewer**:
   - View avatars, banners, distance & travel indicator, biography, genders, orientation, languages, interests/hobbies, social links, groups, and conventions/events.
@@ -38,7 +38,10 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
     - **After Dark Profile Section & Kinks**: Displays After Dark biography, sexual position, role/behaviour (`Dominant`, `Submissive`, `Switch`), safe sex preference, hosting availability (`Can host`), and profile kinks (`Give` / `Receive` ratings) when enabled.
   - Browse **Fursonas** (species, fursuit badge, and reference sheet gallery).
   - Like / Boop profiles and individual gallery photos.
-  - **My Account & My Profile**: View your own stats (Likes & Mutuals) and open your full BARQ! profile directly on the watch.
+  - **My Account, Clickable Relation Lists & News**:
+    - Tap **Likes**, **Mutuals ❤️**, or **Friends ⭐** in **My Account** to browse dedicated, distance-sorted lists of your mutuals, likes, and friends.
+    - **BARQ! News 📰**: Read official BARQ! announcements and articles directly on your watch.
+    - Open your own full BARQ! profile with one tap.
 - **🖼️ Image Caching & Storage Management**:
   - Memory cache (up to 25% RAM) + Disk cache (up to 100 MB) powered by Coil for fast offline-ready avatar and photo loading.
   - **Settings Screen**: Inspect the current image cache size and clear it with one tap.

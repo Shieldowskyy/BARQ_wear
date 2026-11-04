@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
@@ -94,8 +95,10 @@ import app.barq.wear.R
 import app.barq.wear.data.BarqFilterOptions
 import app.barq.wear.data.BarqSearchFilters
 import app.barq.wear.data.FilterOption
+import app.barq.wear.data.NewsItem
 import app.barq.wear.data.OverviewProfile
 import app.barq.wear.data.Place
+import app.barq.wear.data.RelationListType
 import coil.compose.AsyncImage
 
 @Composable
@@ -586,7 +589,8 @@ private enum class FilterSubMenu {
     GENDERS,
     RELATIONSHIP,
     ORIENTATION,
-    SEX_POSITION
+    SEX_POSITION,
+    RELATIONS
 }
 
 @Composable
@@ -719,6 +723,25 @@ fun SearchFilterScreen(
                 },
                 onClearSection = {
                     onUpdateFilters(filters.copy(sexPositions = emptySet()), uiState.isAdMode)
+                },
+                onDone = { subMenu = FilterSubMenu.MAIN }
+            )
+        }
+        FilterSubMenu.RELATIONS -> {
+            MultiSelectFilterSubMenu(
+                title = stringResource(R.string.filters_relation_type),
+                options = BarqFilterOptions.RELATION_TYPES,
+                selectedIds = filters.relationTypes,
+                onToggleOption = { id ->
+                    val next = if (id in filters.relationTypes) {
+                        filters.relationTypes - id
+                    } else {
+                        filters.relationTypes + id
+                    }
+                    onUpdateFilters(filters.copy(relationTypes = next), uiState.isAdMode)
+                },
+                onClearSection = {
+                    onUpdateFilters(filters.copy(relationTypes = emptySet()), uiState.isAdMode)
                 },
                 onDone = { subMenu = FilterSubMenu.MAIN }
             )
@@ -931,6 +954,21 @@ private fun MainFiltersMenu(
                     ),
                     isSelected = filters.sexualOrientation.isNotEmpty(),
                     onClick = { onOpenSubMenu(FilterSubMenu.ORIENTATION) }
+                )
+            }
+
+            item {
+                FilterMenuItemCard(
+                    icon = Icons.Default.Favorite,
+                    title = stringResource(R.string.filters_relation_type),
+                    subtitle = BarqFilterOptions.formatSelected(
+                        context,
+                        filters.relationTypes,
+                        BarqFilterOptions.RELATION_TYPES
+                    ),
+                    isSelected = filters.relationTypes.isNotEmpty(),
+                    accentColor = BarqPink,
+                    onClick = { onOpenSubMenu(FilterSubMenu.RELATIONS) }
                 )
             }
 
@@ -1533,6 +1571,8 @@ fun MyAccountScreen(
     uiState: BarqUiState,
     onEnsureUserLoaded: () -> Unit,
     onOpenMyFullProfile: () -> Unit,
+    onOpenRelationList: (RelationListType) -> Unit,
+    onOpenNews: () -> Unit,
     onOpenSettings: () -> Unit,
     onLogout: () -> Unit
 ) {
@@ -1561,7 +1601,7 @@ fun MyAccountScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                val avatar = profile?.avatarUrl(size = 256)
+                val avatar = profile?.avatarUrl(isAd = uiState.isAdMode || uiState.showNsfw, size = 256)
                 Box(
                     modifier = Modifier
                         .size(64.dp)
@@ -1617,43 +1657,111 @@ fun MyAccountScreen(
                 }
             }
 
-            if (user != null) {
-                item {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            item {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
+                            .weight(1f)
+                            .clip(RoundedCornerShape(14.dp))
                             .background(BarqCardBg)
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                            .border(1.dp, BarqOrange.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
+                            .clickable { onOpenRelationList(RelationListType.LIKES) }
+                            .padding(vertical = 8.dp, horizontal = 6.dp)
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "${user.likeCount}",
-                                color = BarqOrange,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 14.sp
-                            )
-                            Text(
-                                text = stringResource(R.string.account_likes),
-                                color = BarqTextSecondary,
-                                fontSize = 10.sp
-                            )
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "${user.mutualCount}",
-                                color = BarqPink,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 14.sp
-                            )
-                            Text(
-                                text = stringResource(R.string.account_mutuals),
-                                color = BarqTextSecondary,
-                                fontSize = 10.sp
-                            )
-                        }
+                        Text(
+                            text = "${user?.likeCount ?: 0}",
+                            color = BarqOrange,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            text = stringResource(R.string.account_likes),
+                            color = BarqTextPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 10.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(BarqCardBg)
+                            .border(1.dp, BarqPink.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
+                            .clickable { onOpenRelationList(RelationListType.MUTUALS) }
+                            .padding(vertical = 8.dp, horizontal = 6.dp)
+                    ) {
+                        Text(
+                            text = "${user?.mutualCount ?: 0}",
+                            color = BarqPink,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            text = stringResource(R.string.account_mutuals),
+                            color = BarqTextPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 10.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
+            }
+
+            item {
+                Chip(
+                    onClick = { onOpenRelationList(RelationListType.FRIENDS) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ChipDefaults.secondaryChipColors(backgroundColor = BarqCardBg),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = BarqSky,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.account_friends_btn),
+                            color = BarqTextPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                )
+            }
+
+            item {
+                Chip(
+                    onClick = onOpenNews,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ChipDefaults.secondaryChipColors(backgroundColor = BarqCardBg),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Article,
+                            contentDescription = null,
+                            tint = BarqGold,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.account_news_btn),
+                            color = BarqTextPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                )
             }
 
             item {
@@ -2422,6 +2530,422 @@ fun SettingsScreen(
         }
     }
 }
+
+@Composable
+fun RelationProfilesScreen(
+    uiState: BarqUiState,
+    onSelectType: (RelationListType) -> Unit,
+    onProfileClick: (String) -> Unit,
+    onRefresh: () -> Unit
+) {
+    val listState = rememberScalingLazyListState()
+    val currentType = uiState.relationListType
+    val titleRes = when (currentType) {
+        RelationListType.MUTUALS -> R.string.relations_title_mutuals
+        RelationListType.LIKES -> R.string.relations_title_likes
+        RelationListType.FRIENDS -> R.string.relations_title_friends
+    }
+    val accentColor = when (currentType) {
+        RelationListType.MUTUALS -> BarqPink
+        RelationListType.LIKES -> BarqOrange
+        RelationListType.FRIENDS -> BarqSky
+    }
+
+    Scaffold(
+        timeText = { TimeText() },
+        vignette = { Vignette(vignettePosition = VignettePosition.TopAndBottom) },
+        positionIndicator = { PositionIndicator(scalingLazyListState = listState) }
+    ) {
+        ScalingLazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(BarqDarkBg)
+                .wearRotaryScroll(listState),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Text(
+                    text = stringResource(titleRes),
+                    color = accentColor,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            // Quick switch tabs
+            item {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val tabs = listOf(
+                        Triple(RelationListType.MUTUALS, R.string.relations_tab_mutuals, BarqPink),
+                        Triple(RelationListType.LIKES, R.string.relations_tab_likes, BarqOrange),
+                        Triple(RelationListType.FRIENDS, R.string.relations_tab_friends, BarqSky)
+                    )
+                    for ((tabType, labelRes, tabColor) in tabs) {
+                        val selected = currentType == tabType
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(if (selected) tabColor else BarqCardBg)
+                                .clickable { onSelectType(tabType) }
+                                .padding(vertical = 6.dp, horizontal = 4.dp)
+                        ) {
+                            Text(
+                                text = stringResource(labelRes),
+                                color = Color.White,
+                                fontSize = 9.sp,
+                                fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.Medium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (uiState.isLoadingRelationProfiles) {
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(vertical = 18.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            indicatorColor = accentColor,
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.nearby_loading_profiles),
+                            color = BarqTextSecondary,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            } else if (!uiState.relationProfilesError.isNullOrBlank()) {
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF3B1219))
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = uiState.relationProfilesError,
+                            color = Color(0xFFFCA5A5),
+                            fontSize = 11.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        CompactChip(
+                            onClick = onRefresh,
+                            label = { Text(stringResource(R.string.nearby_retry), fontSize = 11.sp) }
+                        )
+                    }
+                }
+            } else if (uiState.relationProfiles.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.relations_empty),
+                        color = BarqTextSecondary,
+                        fontSize = 11.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 18.dp)
+                    )
+                }
+            } else {
+                items(
+                    items = uiState.relationProfiles,
+                    key = { it.uuid }
+                ) { profile ->
+                    ProfileListCard(
+                        profile = profile,
+                        isAdMode = uiState.isAdMode || uiState.showNsfw,
+                        onClick = { onProfileClick(profile.uuid) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NewsListScreen(
+    uiState: BarqUiState,
+    onNewsClick: (NewsItem) -> Unit,
+    onRefresh: () -> Unit
+) {
+    val listState = rememberScalingLazyListState()
+
+    Scaffold(
+        timeText = { TimeText() },
+        vignette = { Vignette(vignettePosition = VignettePosition.TopAndBottom) },
+        positionIndicator = { PositionIndicator(scalingLazyListState = listState) }
+    ) {
+        ScalingLazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(BarqDarkBg)
+                .wearRotaryScroll(listState),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Article,
+                        contentDescription = null,
+                        tint = BarqGold,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.news_title),
+                        color = BarqGold,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            if (uiState.isLoadingNews && uiState.newsItems.isEmpty()) {
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(vertical = 18.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            indicatorColor = BarqGold,
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.news_loading),
+                            color = BarqTextSecondary,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            } else if (!uiState.newsError.isNullOrBlank() && uiState.newsItems.isEmpty()) {
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF3B1219))
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = uiState.newsError,
+                            color = Color(0xFFFCA5A5),
+                            fontSize = 11.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        CompactChip(
+                            onClick = onRefresh,
+                            label = { Text(stringResource(R.string.nearby_retry), fontSize = 11.sp) }
+                        )
+                    }
+                }
+            } else if (uiState.newsItems.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.news_empty),
+                        color = BarqTextSecondary,
+                        fontSize = 11.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 18.dp)
+                    )
+                }
+            } else {
+                items(
+                    items = uiState.newsItems,
+                    key = { it.id ?: it.slug }
+                ) { news ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(BarqCardBg)
+                            .border(1.dp, BarqCardBorder, RoundedCornerShape(16.dp))
+                            .clickable { onNewsClick(news) }
+                            .padding(horizontal = 10.dp, vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                if (!news.category.isNullOrBlank()) {
+                                    Text(
+                                        text = news.category,
+                                        color = BarqGold,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 9.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                                val dateStr = news.formattedDate()
+                                if (dateStr.isNotBlank()) {
+                                    Text(
+                                        text = dateStr,
+                                        color = BarqTextSecondary,
+                                        fontSize = 9.sp
+                                    )
+                                }
+                            }
+                            Text(
+                                text = news.title,
+                                color = BarqTextPrimary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = BarqTextSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NewsDetailScreen(
+    uiState: BarqUiState
+) {
+    val listState = rememberScalingLazyListState()
+    val news = uiState.selectedNewsItem
+
+    Scaffold(
+        timeText = { TimeText() },
+        vignette = { Vignette(vignettePosition = VignettePosition.TopAndBottom) },
+        positionIndicator = { PositionIndicator(scalingLazyListState = listState) }
+    ) {
+        if (news == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BarqDarkBg),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(stringResource(R.string.news_empty), color = BarqTextSecondary, fontSize = 11.sp)
+            }
+            return@Scaffold
+        }
+
+        ScalingLazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(BarqDarkBg)
+                .wearRotaryScroll(listState),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(BarqCardBg)
+                        .border(1.dp, BarqGold.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                        .padding(10.dp)
+                ) {
+                    if (!news.category.isNullOrBlank()) {
+                        Text(
+                            text = news.category,
+                            color = BarqGold,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp
+                        )
+                    }
+                    Text(
+                        text = news.title,
+                        color = BarqTextPrimary,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                    val dateStr = news.formattedDate()
+                    if (dateStr.isNotBlank()) {
+                        Text(
+                            text = dateStr,
+                            color = BarqTextSecondary,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+                }
+            }
+
+            if (uiState.isLoadingNewsDetail && news.content.isNullOrBlank()) {
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            indicatorColor = BarqGold,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(26.dp)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.news_loading_article),
+                            color = BarqTextSecondary,
+                            fontSize = 10.sp
+                        )
+                    }
+                }
+            } else if (!news.content.isNullOrBlank()) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(BarqCardBg)
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = news.content.trim(),
+                            color = BarqTextPrimary,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 
 

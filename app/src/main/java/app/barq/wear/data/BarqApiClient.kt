@@ -431,6 +431,39 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
               __typename
             }
         """
+
+        private const val QUERY_NEWS_ITEMS = """
+            query NewsItems {
+              newsItems {
+                id
+                title
+                slug
+                category
+                audiences
+                updatedAt
+                publishedAt
+                showOnNewsFeed
+                showOnHomePage
+              }
+            }
+        """
+
+        private const val QUERY_NEWS_ITEM_DETAIL = """
+            query NewsItem(${'$'}slug: String!) {
+              newsItem(slug: ${'$'}slug) {
+                id
+                title
+                slug
+                category
+                audiences
+                updatedAt
+                publishedAt
+                showOnNewsFeed
+                showOnHomePage
+                content
+              }
+            }
+        """
     }
 
     private val gson = Gson()
@@ -594,6 +627,10 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
             filters["sexPositions"] = searchFilters.sexPositions.toList()
         }
 
+        if (searchFilters.relationTypes.isNotEmpty()) {
+            filters["relationTypes"] = searchFilters.relationTypes.toList()
+        }
+
         if (latitude != null && longitude != null) {
             filters["location"] = mapOf(
                 "type" to "distance",
@@ -615,10 +652,98 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
                 emptyList()
             } else {
                 val type = object : TypeToken<List<OverviewProfile>>() {}.type
-                gson.fromJson<List<OverviewProfile>>(listEl, type)
+                val parsed = gson.fromJson<List<OverviewProfile>>(listEl, type)
                     .filterNotNull()
-                    .sortedBy { it.distanceKmForSort }
+                val filtered = if (searchFilters.relationTypes.isNotEmpty()) {
+                    parsed.filter { p ->
+                        val rel = p.relationType
+                        rel in searchFilters.relationTypes ||
+                            ("mutual" in searchFilters.relationTypes && rel == "friend")
+                    }
+                } else {
+                    parsed
+                }
+                filtered.sortedBy { it.distanceKmForSort }
             }
+        }
+    }
+
+    suspend fun fetchRelationProfiles(
+        relationListType: RelationListType,
+        isAd: Boolean = false,
+        latitude: Double? = null,
+        longitude: Double? = null
+    ): Result<List<OverviewProfile>> {
+        val filters = mutableMapOf<String, Any>()
+        if (latitude != null && longitude != null) {
+            filters["location"] = mapOf(
+                "type" to "distance",
+                "latitude" to latitude,
+                "longitude" to longitude
+            )
+        }
+        when (relationListType) {
+            RelationListType.MUTUALS -> filters["relationTypes"] = listOf("mutual")
+            RelationListType.FRIENDS -> filters["relationTypes"] = listOf("friend")
+            RelationListType.LIKES -> {
+                // Fetch nearby/recent profiles and filter to likedBy / liked / mutual
+            }
+        }
+        val variables = mapOf(
+            "isAd" to isAd,
+            "filters" to filters,
+            "cursor" to "",
+            "limit" to 100
+        )
+        return executeGraphQl("ProfileSearch", QUERY_PROFILE_SEARCH, variables).mapCatching { data ->
+            val listEl = data.get("profileSearch")
+            val parsed = if (listEl == null || listEl.isJsonNull) {
+                emptyList()
+            } else {
+                val type = object : TypeToken<List<OverviewProfile>>() {}.type
+                gson.fromJson<List<OverviewProfile>>(listEl, type).filterNotNull()
+            }
+            when (relationListType) {
+                RelationListType.MUTUALS -> parsed
+                    .filter { it.relationType == "mutual" || it.relationType == "friend" }
+                    .sortedBy { it.distanceKmForSort }
+                RelationListType.FRIENDS -> parsed
+                    .filter { it.relationType == "friend" }
+                    .sortedBy { it.distanceKmForSort }
+                RelationListType.LIKES -> parsed
+                    .filter { it.relationType == "likedBy" || it.relationType == "liked" }
+                    .sortedWith(
+                        compareBy<OverviewProfile> {
+                            when (it.relationType) {
+                                "likedBy" -> 0
+                                "liked" -> 1
+                                else -> 2
+                            }
+                        }.thenBy { it.distanceKmForSort }
+                    )
+            }
+        }
+    }
+
+    suspend fun fetchNewsItems(): Result<List<NewsItem>> {
+        return executeGraphQl("NewsItems", QUERY_NEWS_ITEMS).mapCatching { data ->
+            val listEl = data.get("newsItems")
+            if (listEl == null || listEl.isJsonNull) {
+                emptyList()
+            } else {
+                val type = object : TypeToken<List<NewsItem>>() {}.type
+                gson.fromJson<List<NewsItem>>(listEl, type).filterNotNull()
+            }
+        }
+    }
+
+    suspend fun fetchNewsItemDetail(slug: String): Result<NewsItem> {
+        return executeGraphQl("NewsItem", QUERY_NEWS_ITEM_DETAIL, mapOf("slug" to slug)).mapCatching { data ->
+            val itemEl = data.get("newsItem")
+            if (itemEl == null || itemEl.isJsonNull) {
+                throw IllegalStateException("News item not found")
+            }
+            gson.fromJson(itemEl, NewsItem::class.java)
         }
     }
 

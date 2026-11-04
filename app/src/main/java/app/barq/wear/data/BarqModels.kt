@@ -104,6 +104,13 @@ object BarqFilterOptions {
         FilterOption("bottom", R.string.pos_bottom, "Bottom")
     )
 
+    val RELATION_TYPES = listOf(
+        FilterOption("mutual", R.string.rel_type_mutual, "Mutuals ❤️"),
+        FilterOption("friend", R.string.rel_type_friend, "Friends ⭐"),
+        FilterOption("likedBy", R.string.rel_type_liked_by, "Liked you ✨"),
+        FilterOption("liked", R.string.rel_type_liked, "Liked by me 🐾")
+    )
+
     fun formatSelected(context: Context, selectedIds: Set<String>, options: List<FilterOption>): String {
         if (selectedIds.isEmpty()) return context.getString(R.string.filters_none_selected)
         val map = options.associateBy { it.id }
@@ -121,7 +128,8 @@ data class BarqSearchFilters(
     val relationshipStatus: Set<String> = emptySet(),
     val sexualOrientation: Set<String> = emptySet(),
     val requireProfileImage: Boolean = false,
-    val sexPositions: Set<String> = emptySet()
+    val sexPositions: Set<String> = emptySet(),
+    val relationTypes: Set<String> = emptySet()
 ) {
     val activeCount: Int
         get() {
@@ -134,6 +142,7 @@ data class BarqSearchFilters(
             if (sexualOrientation.isNotEmpty()) count++
             if (requireProfileImage) count++
             if (sexPositions.isNotEmpty()) count++
+            if (relationTypes.isNotEmpty()) count++
             return count
         }
 
@@ -354,4 +363,26 @@ data class CurrentUser(
     val mutualCount: Int = 0,
     val unreadMessagesCount: Int = 0
 )
+
+enum class RelationListType {
+    MUTUALS,
+    LIKES,
+    FRIENDS
+}
+
+data class NewsItem(
+    val id: String? = null,
+    val title: String = "",
+    val slug: String = "",
+    val category: String? = null,
+    val publishedAt: String? = null,
+    val updatedAt: String? = null,
+    val content: String? = null
+) {
+    fun formattedDate(): String {
+        val raw = publishedAt ?: updatedAt ?: return ""
+        return raw.take(10)
+    }
+}
+
 

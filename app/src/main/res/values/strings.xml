@@ -135,14 +135,36 @@
     <string name="pos_top">Top</string>
     <string name="pos_bottom">Bottom</string>
 
+    <string name="filters_relation_type">Relations (Mutuals / Likes)</string>
+    <string name="rel_type_mutual">Mutuals ❤️</string>
+    <string name="rel_type_friend">Friends ⭐</string>
+    <string name="rel_type_liked_by">Liked you ✨</string>
+    <string name="rel_type_liked">Liked by me 🐾</string>
+
     <!-- My Account & Settings -->
     <string name="account_default_title">My BARQ! Profile</string>
     <string name="account_likes">Likes</string>
     <string name="account_mutuals">Mutuals ❤️</string>
+    <string name="account_friends_btn">Friends ⭐</string>
+    <string name="account_news_btn">BARQ! News 📰</string>
     <string name="account_my_profile_btn">My Profile</string>
     <string name="account_settings_btn">Settings</string>
     <string name="account_cache_fmt">Cache: %1$s</string>
     <string name="account_logout_btn">Log out</string>
+
+    <!-- Relation Lists & News -->
+    <string name="relations_title_mutuals">Mutuals ❤️</string>
+    <string name="relations_title_likes">Likes ✨</string>
+    <string name="relations_title_friends">Friends ⭐</string>
+    <string name="relations_tab_mutuals">Mutuals</string>
+    <string name="relations_tab_likes">Likes</string>
+    <string name="relations_tab_friends">Friends</string>
+    <string name="relations_empty">No profiles found in this list 🐾</string>
+    <string name="news_title">BARQ! News</string>
+    <string name="news_loading">Loading news…</string>
+    <string name="news_error_fetch">Failed to load news</string>
+    <string name="news_empty">No news announcements</string>
+    <string name="news_loading_article">Loading article…</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_ad_nsfw_section">After Dark &amp; NSFW (18+)</string>

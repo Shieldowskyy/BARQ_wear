@@ -22,8 +22,11 @@ import app.barq.wear.ui.LoginScreen
 import app.barq.wear.ui.ManualLocationScreen
 import app.barq.wear.ui.MyAccountScreen
 import app.barq.wear.ui.NearbyScreen
+import app.barq.wear.ui.NewsDetailScreen
+import app.barq.wear.ui.NewsListScreen
 import app.barq.wear.ui.ProfileDetailScreen
 import app.barq.wear.ui.ProvideAppLocale
+import app.barq.wear.ui.RelationProfilesScreen
 import app.barq.wear.ui.SearchFilterScreen
 import app.barq.wear.ui.SettingsScreen
 import app.barq.wear.ui.SonaDetailScreen
@@ -238,6 +241,14 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                             navController.navigate("profile/$myUuid")
                         }
                     },
+                    onOpenRelationList = { type ->
+                        viewModel.loadRelationProfiles(type)
+                        navController.navigate("relations")
+                    },
+                    onOpenNews = {
+                        viewModel.loadNewsItems()
+                        navController.navigate("news")
+                    },
                     onOpenSettings = {
                         viewModel.refreshImageCacheSize()
                         navController.navigate("settings")
@@ -246,6 +257,39 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                         viewModel.logout()
                     }
                 )
+            }
+
+            composable("relations") {
+                RelationProfilesScreen(
+                    uiState = uiState,
+                    onSelectType = { type ->
+                        viewModel.loadRelationProfiles(type)
+                    },
+                    onProfileClick = { uuid ->
+                        viewModel.loadProfileDetail(uuid)
+                        navController.navigate("profile/$uuid")
+                    },
+                    onRefresh = {
+                        viewModel.loadRelationProfiles(uiState.relationListType)
+                    }
+                )
+            }
+
+            composable("news") {
+                NewsListScreen(
+                    uiState = uiState,
+                    onNewsClick = { newsItem ->
+                        viewModel.openNewsItem(newsItem)
+                        navController.navigate("news_detail")
+                    },
+                    onRefresh = {
+                        viewModel.loadNewsItems()
+                    }
+                )
+            }
+
+            composable("news_detail") {
+                NewsDetailScreen(uiState = uiState)
             }
 
             composable("settings") {
