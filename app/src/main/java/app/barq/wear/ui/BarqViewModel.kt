@@ -55,6 +55,8 @@ data class BarqUiState(
 
     val filters: BarqSearchFilters = BarqSearchFilters(),
     val isAdMode: Boolean = false,
+    val showNsfw: Boolean = false,
+    val needsAdNsfwOnboarding: Boolean = false,
 
     val gpsStatusMessage: String? = null,
     val isUpdatingGps: Boolean = false,
@@ -103,7 +105,10 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
             appLanguage = AppLanguage.fromCode(authManager.getAppLanguageCode()),
             isLoggedIn = authManager.isLoggedIn(),
             currentPlace = authManager.getSavedPlace(),
-            myProfileUuid = authManager.getMyProfileUuid()
+            myProfileUuid = authManager.getMyProfileUuid(),
+            isAdMode = authManager.isAdModeEnabled(),
+            showNsfw = authManager.isNsfwEnabled(),
+            needsAdNsfwOnboarding = authManager.isLoggedIn() && !authManager.hasAskedAdNsfwOnboarding()
         )
     )
     val uiState: StateFlow<BarqUiState> = _uiState.asStateFlow()
@@ -150,7 +155,10 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                 isLoggedIn = true,
                 authError = null,
                 currentPlace = savedPlace ?: it.currentPlace,
-                myProfileUuid = savedUuid ?: it.myProfileUuid
+                myProfileUuid = savedUuid ?: it.myProfileUuid,
+                isAdMode = authManager.isAdModeEnabled(),
+                showNsfw = authManager.isNsfwEnabled(),
+                needsAdNsfwOnboarding = !authManager.hasAskedAdNsfwOnboarding()
             )
         }
         viewModelScope.launch {
@@ -259,12 +267,20 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                 val userRes = apiClient.fetchCurrentUser()
                 if (userRes.isSuccess) {
                     val user = userRes.getOrNull()
+                    val userUuid = user?.profile?.uuid
+                    if (!userUuid.isNullOrBlank()) {
+                        authManager.saveMyProfileUuid(userUuid)
+                    }
                     _uiState.update { state ->
                         state.copy(
                             isLoadingQr = false,
                             isLoggedIn = true,
                             currentUser = user,
+                            myProfileUuid = userUuid ?: state.myProfileUuid,
                             currentPlace = user?.profile?.location?.place ?: state.currentPlace,
+                            isAdMode = authManager.isAdModeEnabled(),
+                            showNsfw = authManager.isNsfwEnabled(),
+                            needsAdNsfwOnboarding = !authManager.hasAskedAdNsfwOnboarding(),
                             authError = null
                         )
                     }
@@ -388,13 +404,53 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         newFilters: BarqSearchFilters,
         isAd: Boolean = _uiState.value.isAdMode
     ) {
+        val prevAd = _uiState.value.isAdMode
+        authManager.setAdModeEnabled(isAd)
         _uiState.update {
             it.copy(
                 filters = newFilters,
                 isAdMode = isAd
             )
         }
+        if (prevAd != isAd) {
+            viewModelScope.launch {
+                apiClient.setAdModeUnlocked(isAd)
+            }
+        }
         refreshProfiles()
+    }
+
+    fun completeAdNsfwOnboarding(enableAdAndNsfw: Boolean) {
+        authManager.setAskedAdNsfwOnboarding(true)
+        authManager.setAdModeEnabled(enableAdAndNsfw)
+        authManager.setNsfwEnabled(enableAdAndNsfw)
+        _uiState.update {
+            it.copy(
+                needsAdNsfwOnboarding = false,
+                isAdMode = enableAdAndNsfw,
+                showNsfw = enableAdAndNsfw
+            )
+        }
+        viewModelScope.launch {
+            if (enableAdAndNsfw) {
+                apiClient.setAdModeUnlocked(true)
+            }
+            refreshProfiles()
+        }
+    }
+
+    fun setAdMode(enabled: Boolean) {
+        authManager.setAdModeEnabled(enabled)
+        _uiState.update { it.copy(isAdMode = enabled) }
+        viewModelScope.launch {
+            apiClient.setAdModeUnlocked(enabled)
+        }
+        refreshProfiles()
+    }
+
+    fun setShowNsfw(enabled: Boolean) {
+        authManager.setNsfwEnabled(enabled)
+        _uiState.update { it.copy(showNsfw = enabled) }
     }
 
     fun clearSearchFilters() {

@@ -413,7 +413,7 @@ fun NearbyScreen(
                     }
                     ProfileListCard(
                         profile = profile,
-                        isAdMode = uiState.isAdMode,
+                        isAdMode = uiState.isAdMode || uiState.showNsfw,
                         onClick = { onProfileClick(profile.uuid) }
                     )
                 }
@@ -990,53 +990,51 @@ private fun MainFiltersMenu(
             }
 
             // Group: After Dark (AD)
-            if (uiState.currentUser?.isAdOptIn == true || uiState.isAdMode) {
-                item {
-                    FilterGroupHeader(title = stringResource(R.string.filters_group_after_dark))
-                }
+            item {
+                FilterGroupHeader(title = stringResource(R.string.filters_group_after_dark))
+            }
 
-                item {
-                    ToggleChip(
-                        checked = uiState.isAdMode,
-                        onCheckedChange = { checked ->
-                            onUpdateFilters(filters, checked)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ToggleChipDefaults.toggleChipColors(
-                            checkedStartBackgroundColor = BarqCardBg,
-                            checkedEndBackgroundColor = BarqPink.copy(alpha = 0.35f),
-                            uncheckedStartBackgroundColor = BarqCardBg,
-                            uncheckedEndBackgroundColor = BarqCardBg
-                        ),
-                        label = {
-                            Text(stringResource(R.string.filters_after_dark_mode), fontSize = 11.sp)
-                        },
-                        toggleControl = {
-                            Switch(
-                                checked = uiState.isAdMode,
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = BarqPink,
-                                    checkedTrackColor = BarqPink.copy(alpha = 0.5f)
-                                )
+            item {
+                ToggleChip(
+                    checked = uiState.isAdMode,
+                    onCheckedChange = { checked ->
+                        onUpdateFilters(filters, checked)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ToggleChipDefaults.toggleChipColors(
+                        checkedStartBackgroundColor = BarqCardBg,
+                        checkedEndBackgroundColor = BarqPink.copy(alpha = 0.35f),
+                        uncheckedStartBackgroundColor = BarqCardBg,
+                        uncheckedEndBackgroundColor = BarqCardBg
+                    ),
+                    label = {
+                        Text(stringResource(R.string.filters_after_dark_mode), fontSize = 11.sp)
+                    },
+                    toggleControl = {
+                        Switch(
+                            checked = uiState.isAdMode,
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = BarqPink,
+                                checkedTrackColor = BarqPink.copy(alpha = 0.5f)
                             )
-                        }
-                    )
-                }
+                        )
+                    }
+                )
+            }
 
-                item {
-                    FilterMenuItemCard(
-                        icon = Icons.Default.SwapVert,
-                        title = stringResource(R.string.filters_sexual_position),
-                        subtitle = BarqFilterOptions.formatSelected(
-                            context,
-                            filters.sexPositions,
-                            BarqFilterOptions.SEX_POSITIONS
-                        ),
-                        isSelected = filters.sexPositions.isNotEmpty(),
-                        accentColor = BarqPink,
-                        onClick = { onOpenSubMenu(FilterSubMenu.SEX_POSITION) }
-                    )
-                }
+            item {
+                FilterMenuItemCard(
+                    icon = Icons.Default.SwapVert,
+                    title = stringResource(R.string.filters_sexual_position),
+                    subtitle = BarqFilterOptions.formatSelected(
+                        context,
+                        filters.sexPositions,
+                        BarqFilterOptions.SEX_POSITIONS
+                    ),
+                    isSelected = filters.sexPositions.isNotEmpty(),
+                    accentColor = BarqPink,
+                    onClick = { onOpenSubMenu(FilterSubMenu.SEX_POSITION) }
+                )
             }
 
             // Apply / Back button
@@ -2005,8 +2003,118 @@ fun ManualLocationScreen(
 }
 
 @Composable
+fun AdNsfwOnboardingScreen(
+    onComplete: (Boolean) -> Unit
+) {
+    val listState = rememberScalingLazyListState()
+
+    Scaffold(
+        timeText = { TimeText() },
+        vignette = { Vignette(vignettePosition = VignettePosition.TopAndBottom) },
+        positionIndicator = { PositionIndicator(scalingLazyListState = listState) }
+    ) {
+        ScalingLazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(BarqDarkBg)
+                .wearRotaryScroll(listState),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = stringResource(R.string.onboarding_ad_badge),
+                        color = Color.White,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(BarqPink)
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.onboarding_ad_title),
+                        color = BarqTextPrimary,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            item {
+                Text(
+                    text = stringResource(R.string.onboarding_ad_desc),
+                    color = BarqTextSecondary,
+                    fontSize = 11.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+
+            item {
+                Chip(
+                    onClick = { onComplete(true) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ChipDefaults.primaryChipColors(backgroundColor = BarqPink),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.onboarding_ad_enable_btn),
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+            }
+
+            item {
+                Chip(
+                    onClick = { onComplete(false) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ChipDefaults.secondaryChipColors(backgroundColor = BarqCardBg),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = BarqGreen,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.onboarding_ad_disable_btn),
+                            color = BarqTextPrimary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun SettingsScreen(
     uiState: BarqUiState,
+    onToggleAdMode: (Boolean) -> Unit,
+    onToggleNsfw: (Boolean) -> Unit,
     onSelectLanguage: (AppLanguage) -> Unit,
     onRefreshCacheSize: () -> Unit,
     onClearCache: () -> Unit,
@@ -2050,6 +2158,93 @@ fun SettingsScreen(
                         fontSize = 14.sp
                     )
                 }
+            }
+
+            // After Dark & NSFW (18+) section
+            item {
+                FilterGroupHeader(title = stringResource(R.string.settings_ad_nsfw_section))
+            }
+
+            item {
+                ToggleChip(
+                    checked = uiState.isAdMode,
+                    onCheckedChange = onToggleAdMode,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ToggleChipDefaults.toggleChipColors(
+                        checkedStartBackgroundColor = BarqCardBg,
+                        checkedEndBackgroundColor = BarqPink.copy(alpha = 0.35f),
+                        uncheckedStartBackgroundColor = BarqCardBg,
+                        uncheckedEndBackgroundColor = BarqCardBg
+                    ),
+                    label = {
+                        Text(
+                            text = stringResource(R.string.settings_ad_mode_title),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    secondaryLabel = {
+                        Text(
+                            text = stringResource(R.string.settings_ad_mode_sub),
+                            fontSize = 9.sp,
+                            color = BarqTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    toggleControl = {
+                        Switch(
+                            checked = uiState.isAdMode,
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = BarqPink,
+                                checkedTrackColor = BarqPink.copy(alpha = 0.5f)
+                            )
+                        )
+                    }
+                )
+            }
+
+            item {
+                ToggleChip(
+                    checked = uiState.showNsfw,
+                    onCheckedChange = onToggleNsfw,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ToggleChipDefaults.toggleChipColors(
+                        checkedStartBackgroundColor = BarqCardBg,
+                        checkedEndBackgroundColor = BarqPink.copy(alpha = 0.35f),
+                        uncheckedStartBackgroundColor = BarqCardBg,
+                        uncheckedEndBackgroundColor = BarqCardBg
+                    ),
+                    label = {
+                        Text(
+                            text = stringResource(R.string.settings_nsfw_title),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    secondaryLabel = {
+                        Text(
+                            text = stringResource(R.string.settings_nsfw_sub),
+                            fontSize = 9.sp,
+                            color = BarqTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    toggleControl = {
+                        Switch(
+                            checked = uiState.showNsfw,
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = BarqPink,
+                                checkedTrackColor = BarqPink.copy(alpha = 0.5f)
+                            )
+                        )
+                    }
+                )
             }
 
             // Language selector section

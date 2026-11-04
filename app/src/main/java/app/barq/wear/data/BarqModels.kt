@@ -155,7 +155,7 @@ data class OverviewProfile(
         get() = location?.distance ?: Double.MAX_VALUE
 
     fun avatarUrl(isAd: Boolean = false, size: Int = 300): String? {
-        val img = if (isAd && primaryImageAd != null) primaryImageAd else (primaryImage ?: primaryImageAd)
+        val img = if (isAd) (primaryImageAd ?: primaryImage) else primaryImage
         return img?.resolvedUrl(size)
     }
 
@@ -199,10 +199,30 @@ data class Sona(
     val species: Species? = null,
     val images: List<SonaImage>? = null
 ) {
-    fun mainImageUrl(size: Int = 400): String? {
-        return images?.firstOrNull()?.image?.resolvedUrl(size)
+    fun mainImageUrl(showNsfw: Boolean = false, size: Int = 400): String? {
+        val list = images.orEmpty()
+        val filtered = if (showNsfw) {
+            list
+        } else {
+            list.filter { it.isAd != true && it.image?.contentRating != "explicit" }
+        }
+        return filtered.firstOrNull()?.image?.resolvedUrl(size)
     }
 }
+
+data class KinkInfo(
+    val id: String? = null,
+    val displayName: String? = null,
+    val categoryName: String? = null,
+    val isVerified: Boolean = false,
+    val isSinglePlayer: Boolean = false
+)
+
+data class ProfileKink(
+    val pleasureGive: Int? = null,
+    val pleasureReceive: Int? = null,
+    val kink: KinkInfo? = null
+)
 
 data class Interest(
     val interest: String? = null
@@ -224,7 +244,14 @@ data class ProfileBioAd(
     val behaviour: List<String>? = null,
     val safeSex: String? = null,
     val canHost: Boolean? = null
-)
+) {
+    val hasAnyContent: Boolean
+        get() = !biography.isNullOrBlank() ||
+            !sexPositions.isNullOrEmpty() ||
+            !behaviour.isNullOrEmpty() ||
+            !safeSex.isNullOrBlank() ||
+            canHost != null
+}
 
 data class ProfileImageItem(
     val id: String,
@@ -289,6 +316,7 @@ data class ProfileDetail(
     val location: ProfileLocation? = null,
     val bio: ProfileBio? = null,
     val bioAd: ProfileBioAd? = null,
+    val kinks: List<ProfileKink>? = null,
     val socialAccounts: List<ProfileSocialAccount>? = null,
     val sonas: List<Sona>? = null,
     val groups: List<ProfileGroup>? = null,
@@ -296,12 +324,12 @@ data class ProfileDetail(
     val roles: List<String>? = null
 ) {
     fun avatarUrl(isAd: Boolean = false, size: Int = 400): String? {
-        val img = if (isAd && primaryImageAd != null) primaryImageAd else (primaryImage ?: primaryImageAd)
+        val img = if (isAd) (primaryImageAd ?: primaryImage) else primaryImage
         return img?.resolvedUrl(size)
     }
 
     fun bannerUrl(isAd: Boolean = false, size: Int = 600): String? {
-        val img = if (isAd && headerImageAd != null) headerImageAd else (headerImage ?: headerImageAd)
+        val img = if (isAd) (headerImageAd ?: headerImage) else headerImage
         return img?.resolvedUrl(size)
     }
 

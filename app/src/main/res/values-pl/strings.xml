@@ -139,6 +139,11 @@
     <string name="account_logout_btn">Wyloguj</string>
 
     <string name="settings_title">Ustawienia</string>
+    <string name="settings_ad_nsfw_section">After Dark i NSFW (18+)</string>
+    <string name="settings_ad_mode_title">Tryb After Dark (18+)</string>
+    <string name="settings_ad_mode_sub">Profile AD i sekcja 18+</string>
+    <string name="settings_nsfw_title">Pokazuj zdjęcia NSFW</string>
+    <string name="settings_nsfw_sub">Wyświetlaj zdjęcia 18+ / explicit</string>
     <string name="settings_language_title">Język / Language</string>
     <string name="settings_language_system">Systemowy (Auto)</string>
     <string name="settings_image_cache_title">Cache obrazków</string>
@@ -149,6 +154,13 @@
     <string name="settings_saved_city">Zapisane miasto</string>
     <string name="settings_no_saved_city">Brak wybranego</string>
 
+    <!-- First-Time After Dark & NSFW Prompt -->
+    <string name="onboarding_ad_title">After Dark i NSFW</string>
+    <string name="onboarding_ad_badge">TREŚCI 18+</string>
+    <string name="onboarding_ad_desc">Czy chcesz pokazywać sekcję After Dark (18+) oraz zdjęcia NSFW po zalogowaniu?\nMożesz to zmienić w każdej chwili w Ustawieniach.</string>
+    <string name="onboarding_ad_enable_btn">Pokazuj AD i NSFW (18+)</string>
+    <string name="onboarding_ad_disable_btn">Tylko SFW (Bez 18+)</string>
+
     <!-- Profile Detail & Sona Detail -->
     <string name="profile_loading">Ładowanie profilu…</string>
     <string name="profile_error_fetch">Nie udało się pobrać profilu</string>
@@ -157,6 +169,23 @@
     <string name="profile_travel_home_fmt">✈️ Dom: %1$s</string>
     <string name="profile_section_sonas_fmt">Fursony (%1$d)</string>
     <string name="profile_section_about">O mnie</string>
+    <string name="profile_section_after_dark">After Dark (18+)</string>
+    <string name="profile_ad_position_fmt">Pozycja: %1$s</string>
+    <string name="profile_ad_behaviour_fmt">Rola: %1$s</string>
+    <string name="profile_ad_safesex_fmt">Bezpieczny seks: %1$s</string>
+    <string name="profile_ad_canhost_fmt">Może gościć (Host): %1$s</string>
+    <string name="profile_ad_yes">Tak</string>
+    <string name="profile_ad_no">Nie</string>
+    <string name="profile_ad_kinks_fmt">Kinki (%1$d)</string>
+    <string name="profile_ad_give_short">Daje</string>
+    <string name="profile_ad_receive_short">Odb.</string>
+    <string name="behav_dominant">Dominujący (Dom)</string>
+    <string name="behav_submissive">Uległy (Sub)</string>
+    <string name="behav_switch">Switch</string>
+    <string name="safesex_always">Zawsze</string>
+    <string name="safesex_sometimes">Czasami</string>
+    <string name="safesex_never">Nigdy</string>
+    <string name="safesex_ask">Zapytaj</string>
     <string name="profile_meta_gender_fmt">Płeć: %1$s</string>
     <string name="profile_meta_status_fmt">Status: %1$s</string>
     <string name="profile_meta_orientation_fmt">Orientacja: %1$s</string>

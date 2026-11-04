@@ -145,6 +145,11 @@
     <string name="account_logout_btn">Log out</string>
 
     <string name="settings_title">Settings</string>
+    <string name="settings_ad_nsfw_section">After Dark &amp; NSFW (18+)</string>
+    <string name="settings_ad_mode_title">After Dark Mode (18+)</string>
+    <string name="settings_ad_mode_sub">Browse AD profiles &amp; 18+ bio</string>
+    <string name="settings_nsfw_title">Show NSFW Photos</string>
+    <string name="settings_nsfw_sub">Display 18+ / explicit images</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_system">System Default</string>
     <string name="settings_image_cache_title">Image Cache</string>
@@ -155,6 +160,13 @@
     <string name="settings_saved_city">Saved city</string>
     <string name="settings_no_saved_city">None selected</string>
 
+    <!-- First-Time After Dark & NSFW Prompt -->
+    <string name="onboarding_ad_title">After Dark &amp; NSFW</string>
+    <string name="onboarding_ad_badge">18+ CONTENT</string>
+    <string name="onboarding_ad_desc">Do you want to show After Dark (18+) profiles, bios, and NSFW photos?\nYou can change this anytime in Settings.</string>
+    <string name="onboarding_ad_enable_btn">Show AD &amp; NSFW (18+)</string>
+    <string name="onboarding_ad_disable_btn">SFW Only (Safe)</string>
+
     <!-- Profile Detail & Sona Detail -->
     <string name="profile_loading">Loading profile…</string>
     <string name="profile_error_fetch">Failed to load profile</string>
@@ -163,6 +175,23 @@
     <string name="profile_travel_home_fmt">✈️ Home: %1$s</string>
     <string name="profile_section_sonas_fmt">Fursonas (%1$d)</string>
     <string name="profile_section_about">About Me</string>
+    <string name="profile_section_after_dark">After Dark (18+)</string>
+    <string name="profile_ad_position_fmt">Position: %1$s</string>
+    <string name="profile_ad_behaviour_fmt">Role: %1$s</string>
+    <string name="profile_ad_safesex_fmt">Safe sex: %1$s</string>
+    <string name="profile_ad_canhost_fmt">Can host: %1$s</string>
+    <string name="profile_ad_yes">Yes</string>
+    <string name="profile_ad_no">No</string>
+    <string name="profile_ad_kinks_fmt">Kinks (%1$d)</string>
+    <string name="profile_ad_give_short">Give</string>
+    <string name="profile_ad_receive_short">Recv</string>
+    <string name="behav_dominant">Dominant</string>
+    <string name="behav_submissive">Submissive</string>
+    <string name="behav_switch">Switch</string>
+    <string name="safesex_always">Always</string>
+    <string name="safesex_sometimes">Sometimes</string>
+    <string name="safesex_never">Never</string>
+    <string name="safesex_ask">Ask me</string>
     <string name="profile_meta_gender_fmt">Gender: %1$s</string>
     <string name="profile_meta_status_fmt">Status: %1$s</string>
     <string name="profile_meta_orientation_fmt">Orientation: %1$s</string>

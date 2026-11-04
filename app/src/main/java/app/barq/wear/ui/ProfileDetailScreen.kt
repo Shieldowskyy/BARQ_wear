@@ -138,6 +138,8 @@ fun ProfileDetailScreen(
 
         if (detail == null) return@Scaffold
 
+        val allowAdultContent = uiState.isAdMode || uiState.showNsfw
+
         ScalingLazyColumn(
             state = listState,
             modifier = Modifier
@@ -149,7 +151,7 @@ fun ProfileDetailScreen(
         ) {
             // Hero Banner + Avatar
             item {
-                ProfileHeroHeader(detail = detail, isAdMode = uiState.isAdMode)
+                ProfileHeroHeader(detail = detail, isAdMode = allowAdultContent)
             }
 
             // Like / Boop Button (if not own profile)
@@ -248,7 +250,11 @@ fun ProfileDetailScreen(
                     SectionHeader(title = stringResource(R.string.profile_section_sonas_fmt, sonas.size))
                 }
                 items(sonas, key = { it.id }) { sona ->
-                    SonaCard(sona = sona, onClick = { onSonaClick(sona) })
+                    SonaCard(
+                        sona = sona,
+                        showNsfw = allowAdultContent,
+                        onClick = { onSonaClick(sona) }
+                    )
                 }
             }
 
@@ -334,8 +340,144 @@ fun ProfileDetailScreen(
                 }
             }
 
+            // After Dark (18+) Section & Kinks
+            val bioAd = detail.bioAd
+            val kinks = detail.kinks.orEmpty().filter { !it.kink?.displayName.isNullOrBlank() }
+            if (allowAdultContent && ((bioAd != null && bioAd.hasAnyContent) || kinks.isNotEmpty())) {
+                item {
+                    SectionHeader(
+                        title = stringResource(R.string.profile_section_after_dark),
+                        color = BarqPink
+                    )
+                }
+                if (bioAd != null && bioAd.hasAnyContent) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(BarqCardBg)
+                                .border(1.dp, BarqPink.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
+                                .padding(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            if (!bioAd.biography.isNullOrBlank()) {
+                                Text(
+                                    text = bioAd.biography.trim(),
+                                    color = BarqTextPrimary,
+                                    fontSize = 11.sp
+                                )
+                            }
+
+                            val adMetaLines = buildList {
+                                if (!bioAd.sexPositions.isNullOrEmpty()) {
+                                    add(
+                                        context.getString(
+                                            R.string.profile_ad_position_fmt,
+                                            bioAd.sexPositions.joinToString(", ") { formatPosition(context, it) }
+                                        )
+                                    )
+                                }
+                                if (!bioAd.behaviour.isNullOrEmpty()) {
+                                    add(
+                                        context.getString(
+                                            R.string.profile_ad_behaviour_fmt,
+                                            bioAd.behaviour.joinToString(", ") { formatBehaviour(context, it) }
+                                        )
+                                    )
+                                }
+                                if (!bioAd.safeSex.isNullOrBlank()) {
+                                    add(
+                                        context.getString(
+                                            R.string.profile_ad_safesex_fmt,
+                                            formatSafeSex(context, bioAd.safeSex)
+                                        )
+                                    )
+                                }
+                                if (bioAd.canHost != null) {
+                                    val hostLabel = if (bioAd.canHost) {
+                                        context.getString(R.string.profile_ad_yes)
+                                    } else {
+                                        context.getString(R.string.profile_ad_no)
+                                    }
+                                    add(context.getString(R.string.profile_ad_canhost_fmt, hostLabel))
+                                }
+                            }
+
+                            for (line in adMetaLines) {
+                                Text(
+                                    text = line,
+                                    color = BarqPink,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 10.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (kinks.isNotEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(BarqCardBg)
+                                .border(1.dp, BarqPink.copy(alpha = 0.35f), RoundedCornerShape(14.dp))
+                                .padding(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.profile_ad_kinks_fmt, kinks.size),
+                                color = BarqPink,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp
+                            )
+                            for (pk in kinks.take(25)) {
+                                val kName = pk.kink?.displayName ?: continue
+                                val ratingParts = buildList {
+                                    pk.pleasureGive?.let {
+                                        add("${context.getString(R.string.profile_ad_give_short)}: ${formatKinkScore(it)}")
+                                    }
+                                    pk.pleasureReceive?.let {
+                                        add("${context.getString(R.string.profile_ad_receive_short)}: ${formatKinkScore(it)}")
+                                    }
+                                }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = kName,
+                                        color = BarqTextPrimary,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    if (ratingParts.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = ratingParts.joinToString(" • "),
+                                            color = BarqTextSecondary,
+                                            fontSize = 9.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Profile Gallery Images
-            val gallery = detail.images.orEmpty().filter { it.image?.resolvedUrl() != null }
+            val gallery = detail.images.orEmpty().filter { item ->
+                val hasUrl = item.image?.resolvedUrl() != null
+                val isExplicit = item.isAd || item.image?.contentRating == "explicit"
+                hasUrl && (allowAdultContent || !isExplicit)
+            }
             if (gallery.isNotEmpty()) {
                 item {
                     SectionHeader(title = stringResource(R.string.profile_section_photos_fmt, gallery.size))
@@ -390,7 +532,7 @@ fun ProfileDetailScreen(
             }
 
             // Groups
-            val groups = detail.groups.orEmpty().mapNotNull { it.group }
+            val groups = detail.groups.orEmpty().mapNotNull { it.group }.filter { allowAdultContent || !it.isAd }
             if (groups.isNotEmpty()) {
                 item {
                     SectionHeader(title = stringResource(R.string.profile_section_groups_fmt, groups.size))
@@ -407,7 +549,7 @@ fun ProfileDetailScreen(
                         Icon(
                             imageVector = Icons.Default.Groups,
                             contentDescription = null,
-                            tint = BarqOrangeLight,
+                            tint = if (grp.isAd) BarqPink else BarqOrangeLight,
                             modifier = Modifier.size(15.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -423,7 +565,7 @@ fun ProfileDetailScreen(
             }
 
             // Events / Conventions
-            val events = detail.events.orEmpty().mapNotNull { it.event }
+            val events = detail.events.orEmpty().mapNotNull { it.event }.filter { allowAdultContent || !it.isAd }
             if (events.isNotEmpty()) {
                 item {
                     SectionHeader(title = stringResource(R.string.profile_section_events_fmt, events.size))
@@ -602,9 +744,11 @@ private fun ProfileHeroHeader(detail: ProfileDetail, isAdMode: Boolean) {
 }
 
 @Composable
-private fun SonaCard(sona: Sona, onClick: () -> Unit) {
-    val imgUrl = sona.mainImageUrl(size = 256)
-    val imageCount = sona.images?.size ?: 0
+private fun SonaCard(sona: Sona, showNsfw: Boolean, onClick: () -> Unit) {
+    val imgUrl = sona.mainImageUrl(showNsfw = showNsfw, size = 256)
+    val imageCount = sona.images?.count {
+        showNsfw || (it.isAd != true && it.image?.contentRating != "explicit")
+    } ?: 0
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -721,9 +865,15 @@ private fun ProfileGalleryCard(
                 .fillMaxWidth()
                 .padding(horizontal = 6.dp, vertical = 4.dp)
         ) {
+            val isExplicit = item.isAd || item.image.contentRating == "explicit"
+            val ratingBadge = when {
+                item.isAd -> "AD 18+"
+                item.image.contentRating == "explicit" -> "NSFW 18+"
+                else -> "SFW"
+            }
             Text(
-                text = if (item.isAd) "AD 18+" else "SFW",
-                color = if (item.isAd) BarqPink else BarqTextSecondary,
+                text = ratingBadge,
+                color = if (isExplicit) BarqPink else BarqTextSecondary,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -755,7 +905,7 @@ private fun ProfileGalleryCard(
 }
 
 @Composable
-fun SonaDetailScreen(sona: Sona?) {
+fun SonaDetailScreen(sona: Sona?, showNsfw: Boolean = false) {
     val listState = rememberScalingLazyListState()
 
     Scaffold(
@@ -775,7 +925,9 @@ fun SonaDetailScreen(sona: Sona?) {
             return@Scaffold
         }
 
-        val images = sona.images.orEmpty().mapNotNull { it.image?.resolvedUrl(size = 600) }
+        val images = sona.images.orEmpty()
+            .filter { showNsfw || (it.isAd != true && it.image?.contentRating != "explicit") }
+            .mapNotNull { it.image?.resolvedUrl(size = 600) }
 
         ScalingLazyColumn(
             state = listState,
@@ -850,14 +1002,43 @@ fun SonaDetailScreen(sona: Sona?) {
 }
 
 @Composable
-private fun SectionHeader(title: String) {
+private fun SectionHeader(title: String, color: Color = BarqOrangeLight) {
     Text(
         text = title,
-        color = BarqOrangeLight,
+        color = color,
         fontWeight = FontWeight.Bold,
         fontSize = 12.sp,
         modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
     )
+}
+
+private fun formatPosition(context: android.content.Context, raw: String): String = when (raw.lowercase()) {
+    "top" -> context.getString(R.string.pos_top)
+    "bottom" -> context.getString(R.string.pos_bottom)
+    else -> formatEnum(raw)
+}
+
+private fun formatBehaviour(context: android.content.Context, raw: String): String = when (raw.lowercase()) {
+    "dominant" -> context.getString(R.string.behav_dominant)
+    "submissive" -> context.getString(R.string.behav_submissive)
+    "switch" -> context.getString(R.string.behav_switch)
+    else -> formatEnum(raw)
+}
+
+private fun formatSafeSex(context: android.content.Context, raw: String): String = when (raw.lowercase()) {
+    "always" -> context.getString(R.string.safesex_always)
+    "sometimes" -> context.getString(R.string.safesex_sometimes)
+    "never" -> context.getString(R.string.safesex_never)
+    "ask" -> context.getString(R.string.safesex_ask)
+    else -> formatEnum(raw)
+}
+
+private fun formatKinkScore(score: Int): String = when (score) {
+    4 -> "❤️"
+    3 -> "👍"
+    2 -> "🤔"
+    1 -> "👎"
+    else -> "$score"
 }
 
 private fun formatEnum(raw: String): String {

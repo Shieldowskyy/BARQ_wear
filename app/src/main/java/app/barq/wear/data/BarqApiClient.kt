@@ -200,6 +200,20 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
 
         private const val FRAGMENTS_DETAIL = """
             $FRAGMENTS_USER
+            fragment KinkFragment on Kink {
+              id
+              displayName
+              categoryName
+              isVerified
+              isSinglePlayer
+            }
+            fragment ProfileKinkFragment on ProfileKink {
+              pleasureGive
+              pleasureReceive
+              kink {
+                ...KinkFragment
+              }
+            }
             fragment GroupFragment on Group {
               uuid
               displayName
@@ -264,6 +278,9 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
                 }
                 bioAd {
                   ...ProfileBioAdFragment
+                }
+                kinks {
+                  ...ProfileKinkFragment
                 }
                 sonas {
                   ...SonaFragment
@@ -342,6 +359,18 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
         private const val MUTATION_LIKE_IMAGE = """
             mutation ProfileImageLike(${'$'}profileImageLikeId: ID!, ${'$'}liked: Boolean!) {
               profileImageLike(id: ${'$'}profileImageLikeId, liked: ${'$'}liked)
+            }
+        """
+
+        private const val MUTATION_UNLOCK_AD_MODE = """
+            mutation UserUnlockAdMode {
+              userUnlockAdMode
+            }
+        """
+
+        private const val MUTATION_LOCK_AD_MODE = """
+            mutation UserLockAdMode {
+              userLockAdMode
             }
         """
 
@@ -668,6 +697,15 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
             if (placeEl != null && !placeEl.isJsonNull) {
                 gson.fromJson(placeEl, Place::class.java)
             } else null
+        }
+    }
+
+    suspend fun setAdModeUnlocked(unlocked: Boolean): Result<Boolean> {
+        val opName = if (unlocked) "UserUnlockAdMode" else "UserLockAdMode"
+        val query = if (unlocked) MUTATION_UNLOCK_AD_MODE else MUTATION_LOCK_AD_MODE
+        val field = if (unlocked) "userUnlockAdMode" else "userLockAdMode"
+        return executeGraphQl(opName, query).mapCatching { data ->
+            data.optBool(field, unlocked)
         }
     }
 }

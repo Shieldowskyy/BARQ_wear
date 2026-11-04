@@ -30,8 +30,12 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
   - **Sexual Orientation** (`Straight`, `Bisexual`, `Gay`, `Lesbian`, `Pansexual`, `Asexual`, `Questioning`, `Other`)
   - **Search Options**: `Require Profile Image`
   - **After Dark (18+)**: Toggle After Dark mode and filter by `Sexual Position` (`Top`, `Bottom`)
-- **👤 Full Profile & Fursona Viewer**:
+- **👤 Full Profile, Fursona & After Dark (18+) Viewer**:
   - View avatars, banners, distance & travel indicator, biography, genders, orientation, languages, interests/hobbies, social links, groups, and conventions/events.
+  - **After Dark (18+) & NSFW Support**:
+    - **First-Time Post-Login Prompt**: Asks on first login whether to enable **After Dark (18+) & NSFW** content or keep **SFW Only** mode.
+    - **Settings Toggles**: Switch **After Dark Mode (18+)** and **Show NSFW Photos** on or off at any time in **Settings**.
+    - **After Dark Profile Section & Kinks**: Displays After Dark biography, sexual position, role/behaviour (`Dominant`, `Submissive`, `Switch`), safe sex preference, hosting availability (`Can host`), and profile kinks (`Give` / `Receive` ratings) when enabled.
   - Browse **Fursonas** (species, fursuit badge, and reference sheet gallery).
   - Like / Boop profiles and individual gallery photos.
   - **My Account & My Profile**: View your own stats (Likes & Mutuals) and open your full BARQ! profile directly on the watch.

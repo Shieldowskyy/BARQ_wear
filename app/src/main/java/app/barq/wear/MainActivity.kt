@@ -15,6 +15,7 @@ import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import app.barq.wear.data.BarqAuthManager
+import app.barq.wear.ui.AdNsfwOnboardingScreen
 import app.barq.wear.ui.BarqViewModel
 import app.barq.wear.ui.BarqWearTheme
 import app.barq.wear.ui.LoginScreen
@@ -124,6 +125,15 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                 uiState = uiState,
                 onRefreshQr = { viewModel.startQrLoginSession() },
                 onSubmitManualToken = { token -> viewModel.loginWithManualToken(token) }
+            )
+            return@ProvideAppLocale
+        }
+
+        if (uiState.needsAdNsfwOnboarding) {
+            AdNsfwOnboardingScreen(
+                onComplete = { enableAdAndNsfw ->
+                    viewModel.completeAdNsfwOnboarding(enableAdAndNsfw)
+                }
             )
             return@ProvideAppLocale
         }
@@ -241,6 +251,12 @@ fun BarqWearApp(viewModel: BarqViewModel) {
             composable("settings") {
                 SettingsScreen(
                     uiState = uiState,
+                    onToggleAdMode = { enabled ->
+                        viewModel.setAdMode(enabled)
+                    },
+                    onToggleNsfw = { enabled ->
+                        viewModel.setShowNsfw(enabled)
+                    },
                     onSelectLanguage = { lang ->
                         viewModel.setAppLanguage(lang)
                     },
@@ -282,7 +298,10 @@ fun BarqWearApp(viewModel: BarqViewModel) {
             }
 
             composable("sona") {
-                SonaDetailScreen(sona = uiState.selectedSona)
+                SonaDetailScreen(
+                    sona = uiState.selectedSona,
+                    showNsfw = uiState.showNsfw || uiState.isAdMode
+                )
             }
         }
     }

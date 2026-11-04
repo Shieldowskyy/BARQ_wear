@@ -99,6 +99,9 @@ class BarqAuthManager(context: Context) {
         private const val KEY_APP_LANGUAGE = "app_language"
         private const val KEY_CACHED_NEARBY_JSON = "cached_nearby_profiles_json"
         private const val KEY_CACHED_NEARBY_TS = "cached_nearby_timestamp"
+        private const val KEY_AD_ONBOARDING_ASKED = "ad_nsfw_onboarding_asked"
+        private const val KEY_AD_MODE_ENABLED = "ad_mode_enabled"
+        private const val KEY_NSFW_ENABLED = "nsfw_enabled"
     }
 
     private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -138,8 +141,33 @@ class BarqAuthManager(context: Context) {
             .remove(KEY_REFRESH_TOKEN)
             .remove(KEY_EXPIRES_AT)
             .remove(KEY_MY_PROFILE_UUID)
+            .remove(KEY_AD_ONBOARDING_ASKED)
             .apply()
         cookieJar.clear()
+    }
+
+    fun hasAskedAdNsfwOnboarding(): Boolean {
+        return prefs.getBoolean(KEY_AD_ONBOARDING_ASKED, false)
+    }
+
+    fun setAskedAdNsfwOnboarding(asked: Boolean) {
+        prefs.edit().putBoolean(KEY_AD_ONBOARDING_ASKED, asked).apply()
+    }
+
+    fun isAdModeEnabled(): Boolean {
+        return prefs.getBoolean(KEY_AD_MODE_ENABLED, false)
+    }
+
+    fun setAdModeEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_AD_MODE_ENABLED, enabled).apply()
+    }
+
+    fun isNsfwEnabled(): Boolean {
+        return prefs.getBoolean(KEY_NSFW_ENABLED, false)
+    }
+
+    fun setNsfwEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_NSFW_ENABLED, enabled).apply()
     }
 
     fun saveSelectedPlace(place: Place) {
