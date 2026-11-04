@@ -286,8 +286,8 @@ class BarqAuthManager(context: Context) {
                     ?: tokenElement.get("refresh_token")?.asString
 
                 if (!refresh.isNullOrBlank() && access.isNullOrBlank()) {
-                    val newAccess = refreshTokensInternal(refresh)
-                        ?: return@withContext Result.failure(IllegalStateException("Nie udało się odświeżyć tokenu (ory_rt)"))
+                    refreshTokensInternal(refresh)
+                        ?: return@withContext Result.failure(IllegalStateException("Failed to refresh token (ory_rt)"))
                     return@withContext Result.success(Unit)
                 } else if (!access.isNullOrBlank()) {
                     saveTokens(access, refresh, 86400L * 7)
@@ -297,8 +297,8 @@ class BarqAuthManager(context: Context) {
 
             // Check if user pasted an Ory refresh token (ory_rt_...)
             if (trimmed.startsWith("ory_rt_")) {
-                val refreshed = refreshTokensInternal(trimmed)
-                    ?: return@withContext Result.failure(IllegalStateException("Nie udało się wymienić Refresh Tokenu na Access Token"))
+                refreshTokensInternal(trimmed)
+                    ?: return@withContext Result.failure(IllegalStateException("Failed to exchange Refresh Token for Access Token"))
                 return@withContext Result.success(Unit)
             }
 
@@ -411,17 +411,16 @@ class BarqAuthManager(context: Context) {
                 .post(formBody)
                 .build()
 
-            var nextUrl: String? = null
-            noRedirectClient.newCall(approveReq).execute().use { resp ->
-                nextUrl = extractRedirectLocation(resp)
+            val nextUrl: String? = noRedirectClient.newCall(approveReq).execute().use { resp ->
+                extractRedirectLocation(resp)
             }
 
             if (nextUrl.isNullOrBlank()) {
-                return QrPollResult.Error("Brak przekierowania po zatwierdzeniu QR")
+                return QrPollResult.Error("Missing redirect after QR approval")
             }
 
             var authCode: String? = null
-            var currentUrl = nextUrl!!
+            var currentUrl: String = nextUrl
 
             for (hop in 0 until 12) {
                 if (currentUrl.startsWith(REDIRECT_URI)) {

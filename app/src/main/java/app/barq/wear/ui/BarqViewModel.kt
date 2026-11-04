@@ -610,6 +610,7 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    @OptIn(coil.annotation.ExperimentalCoilApi::class)
     fun refreshImageCacheSize() {
         viewModelScope.launch {
             val size = withContext(Dispatchers.IO) {
@@ -625,6 +626,7 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    @OptIn(coil.annotation.ExperimentalCoilApi::class)
     fun clearImageCache() {
         if (_uiState.value.isClearingCache) return
         _uiState.update { it.copy(isClearingCache = true) }
