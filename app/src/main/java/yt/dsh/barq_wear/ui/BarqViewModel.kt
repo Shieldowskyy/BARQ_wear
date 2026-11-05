@@ -122,6 +122,21 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
     val authManager = BarqAuthManager(application)
     val apiClient = BarqApiClient(authManager)
 
+    private data class CachedProfileEntry(
+        val detail: ProfileDetail,
+        val timestamp: Long
+    )
+
+    private val profileDetailCache = object : LinkedHashMap<String, CachedProfileEntry>(20, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, CachedProfileEntry>?): Boolean {
+            return size > 25
+        }
+    }
+
+    companion object {
+        private const val PROFILE_CACHE_TTL_MS = 10 * 60 * 1000L // 10 minutes
+    }
+
     private val _uiState = MutableStateFlow(
         BarqUiState(
             appLanguage = AppLanguage.fromCode(authManager.getAppLanguageCode()),
@@ -131,7 +146,8 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
             isAdMode = authManager.isAdModeEnabled(),
             showNsfw = authManager.isNsfwEnabled(),
             needsAdNsfwOnboarding = authManager.isLoggedIn() && !authManager.hasAskedAdNsfwOnboarding(),
-            boopBalance = authManager.getLastKnownBoopBalance()
+            boopBalance = authManager.getLastKnownBoopBalance(),
+            profiles = authManager.getCachedNearbyProfiles().orEmpty()
         )
     )
     val uiState: StateFlow<BarqUiState> = _uiState.asStateFlow()
@@ -173,6 +189,7 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         qrPollJob?.cancel()
         val savedPlace = authManager.getSavedPlace()
         val savedUuid = authManager.getMyProfileUuid()
+        val cachedProfiles = authManager.getCachedNearbyProfiles().orEmpty()
         _uiState.update {
             it.copy(
                 isLoggedIn = true,
@@ -181,7 +198,8 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                 myProfileUuid = savedUuid ?: it.myProfileUuid,
                 isAdMode = authManager.isAdModeEnabled(),
                 showNsfw = authManager.isNsfwEnabled(),
-                needsAdNsfwOnboarding = !authManager.hasAskedAdNsfwOnboarding()
+                needsAdNsfwOnboarding = !authManager.hasAskedAdNsfwOnboarding(),
+                profiles = if (it.profiles.isEmpty()) cachedProfiles else it.profiles
             )
         }
         viewModelScope.launch {
@@ -710,6 +728,7 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         if (_uiState.value.isClearingCache) return
         _uiState.update { it.copy(isClearingCache = true) }
         viewModelScope.launch {
+            profileDetailCache.clear()
             withContext(Dispatchers.IO) {
                 val app = getApplication<Application>()
                 runCatching {
@@ -733,16 +752,37 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun loadProfileDetail(uuid: String) {
-        _uiState.update {
-            it.copy(
-                selectedProfile = null,
-                isLoadingProfileDetail = true,
-                profileDetailError = null
-            )
+    fun loadProfileDetail(uuid: String, forceRefresh: Boolean = false) {
+        if (uuid.isBlank()) return
+
+        val cached = profileDetailCache[uuid]
+        val now = System.currentTimeMillis()
+        val isFresh = cached != null && (now - cached.timestamp < PROFILE_CACHE_TTL_MS)
+
+        if (cached != null) {
+            _uiState.update {
+                it.copy(
+                    selectedProfile = cached.detail,
+                    isLoadingProfileDetail = false,
+                    profileDetailError = null
+                )
+            }
+            if (isFresh && !forceRefresh) {
+                return
+            }
+        } else {
+            _uiState.update {
+                it.copy(
+                    selectedProfile = null,
+                    isLoadingProfileDetail = true,
+                    profileDetailError = null
+                )
+            }
         }
+
         viewModelScope.launch {
             apiClient.fetchProfileDetail(uuid).onSuccess { detail ->
+                profileDetailCache[uuid] = CachedProfileEntry(detail, System.currentTimeMillis())
                 _uiState.update {
                     it.copy(
                         selectedProfile = detail,
@@ -751,11 +791,15 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
             }.onFailure { err ->
-                _uiState.update {
-                    it.copy(
-                        isLoadingProfileDetail = false,
-                        profileDetailError = err.message ?: str(R.string.profile_error_fetch)
-                    )
+                if (cached == null) {
+                    _uiState.update {
+                        it.copy(
+                            isLoadingProfileDetail = false,
+                            profileDetailError = err.message ?: str(R.string.profile_error_fetch)
+                        )
+                    }
+                } else {
+                    _uiState.update { it.copy(isLoadingProfileDetail = false) }
                 }
             }
         }
@@ -768,8 +812,9 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val currentlyLiked = detail.isLikedOrMutual
             apiClient.toggleLikeProfile(detail.uuid, currentlyLiked).onSuccess { newRelation ->
+                val updatedDetail = detail.copy(relationType = newRelation)
+                profileDetailCache[detail.uuid] = CachedProfileEntry(updatedDetail, System.currentTimeMillis())
                 _uiState.update { state ->
-                    val updatedDetail = state.selectedProfile?.copy(relationType = newRelation)
                     val updatedList = state.profiles.map { item ->
                         if (item.uuid == detail.uuid) item.copy(relationType = newRelation) else item
                     }
@@ -796,7 +841,9 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                             img.copy(hasLiked = targetLiked, likeCount = newCount)
                         } else img
                     }
-                    state.copy(selectedProfile = currentDetail.copy(images = updatedImages))
+                    val updatedDetail = currentDetail.copy(images = updatedImages)
+                    profileDetailCache[currentDetail.uuid] = CachedProfileEntry(updatedDetail, System.currentTimeMillis())
+                    state.copy(selectedProfile = updatedDetail)
                 }
             }
         }
