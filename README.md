@@ -77,6 +77,18 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
 
 ---
 
+## 📥 Download
+
+Pre-built, ready-to-install APKs are available on the **[GitHub Releases](https://github.com/Shieldowskyy/BARQ_wear/releases)** page!
+
+1. Download the latest `BARQ_wear-vX.Y.Z-universal-release.apk` from [Releases](https://github.com/Shieldowskyy/BARQ_wear/releases/latest).
+2. Install it onto your watch via ADB or your favorite Wear OS installer app (such as [Bugjaeger](https://play.google.com/store/apps/details?id=eu.sisik.hackendebug) or GeminiMan Wear OS Manager):
+   ```bash
+   adb install -r BARQ_wear-v1.0.0-universal-release.apk
+   ```
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Language**: Kotlin (`JVM 17`)
@@ -101,7 +113,7 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/Shieldziak/BARQ_wear.git
+   git clone https://github.com/Shieldowskyy/BARQ_wear.git
    cd BARQ_wear
    ```
 
