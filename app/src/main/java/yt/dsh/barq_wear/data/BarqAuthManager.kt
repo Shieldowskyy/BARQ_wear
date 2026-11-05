@@ -79,7 +79,7 @@ class MemoryCookieJar : CookieJar {
     }
 }
 
-class BarqAuthManager(context: Context) {
+class BarqAuthManager(private val context: Context) {
 
     companion object {
         const val AUTH_HOST = "https://auth.barq.app"
@@ -144,6 +144,10 @@ class BarqAuthManager(context: Context) {
             .remove(KEY_AD_ONBOARDING_ASKED)
             .apply()
         cookieJar.clear()
+        runCatching {
+            yt.dsh.barq_wear.sync.BarqSyncScheduler.cancelSync(context)
+            yt.dsh.barq_wear.complication.BarqComplicationService.requestComplicationUpdate(context)
+        }
     }
 
     fun hasAskedAdNsfwOnboarding(): Boolean {
@@ -205,6 +209,9 @@ class BarqAuthManager(context: Context) {
             .putString(KEY_CACHED_NEARBY_JSON, gson.toJson(topSlice))
             .putLong(KEY_CACHED_NEARBY_TS, System.currentTimeMillis())
             .apply()
+        runCatching {
+            yt.dsh.barq_wear.complication.BarqComplicationService.requestComplicationUpdate(context)
+        }
     }
 
     fun getCachedNearbyProfiles(maxAgeMs: Long = 30L * 60L * 1000L): List<OverviewProfile>? {

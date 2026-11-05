@@ -27,3 +27,8 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 
+# WorkManager Worker reflection
+-keep class * extends androidx.work.ListenableWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+

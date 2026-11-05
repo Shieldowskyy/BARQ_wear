@@ -249,4 +249,7 @@
     <string name="tile_login_required">Tap to log in to BARQ!</string>
     <string name="tile_empty_nearby">No furs cached yet • Tap to open</string>
     <string name="tile_open_app">Open BARQ! 🐾</string>
+    <!-- Wear OS Complications -->
+    <string name="complication_label">BARQ! Nearby Furs</string>
+    <string name="complication_description">Shows number of nearby furs and distance to closest profile</string>
 </resources>

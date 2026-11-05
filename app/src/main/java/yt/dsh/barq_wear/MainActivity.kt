@@ -83,6 +83,9 @@ class MainActivity : ComponentActivity() {
 
         handleDeepLinkIntent(intent)
 
+        // Schedule periodic WorkManager background sync for Nearby furs, Tiles, and Complications
+        yt.dsh.barq_wear.sync.BarqSyncScheduler.schedulePeriodicSync(applicationContext)
+
         setContent {
             BarqWearTheme {
                 BarqWearApp(viewModel = viewModel)

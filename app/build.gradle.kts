@@ -99,5 +99,9 @@ dependencies {
     implementation(libs.androidx.wear.protolayout)
     implementation(libs.androidx.wear.protolayout.material)
     implementation(libs.androidx.wear.protolayout.expression)
+
+    // WorkManager & Complications
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.wear.watchface.complications.data.source.ktx)
 }
 

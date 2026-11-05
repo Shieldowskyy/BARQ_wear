@@ -243,5 +243,8 @@
     <string name="tile_login_required">Dotknij, aby zalogować się w BARQ!</string>
     <string name="tile_empty_nearby">Brak zapisanych • Dotknij, aby otworzyć</string>
     <string name="tile_open_app">Otwórz BARQ! 🐾</string>
+    <!-- Wear OS Complications -->
+    <string name="complication_label">BARQ! W pobliżu</string>
+    <string name="complication_description">Pokazuje liczbę futrzaków w pobliżu i odległość do najbliższego</string>
 </resources>
 
