@@ -72,21 +72,22 @@ class MainActivity : ComponentActivity() {
         Coil.setImageLoader(
             ImageLoader.Builder(applicationContext)
                 .okHttpClient(coilOkHttp)
+                .allowRgb565(true)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .memoryCache {
                     MemoryCache.Builder(applicationContext)
-                        .maxSizePercent(0.25)
+                        .maxSizePercent(0.20)
                         .build()
                 }
                 .diskCache {
                     DiskCache.Builder()
                         .directory(imageCacheDir)
-                        .maxSizeBytes(100L * 1024 * 1024) // 100 MB disk cache
+                        .maxSizeBytes(60L * 1024 * 1024) // 60 MB disk cache
                         .build()
                 }
                 .respectCacheHeaders(false)
-                .crossfade(true)
+                .crossfade(false)
                 .build()
         )
 
