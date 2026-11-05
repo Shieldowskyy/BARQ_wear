@@ -264,5 +264,8 @@
     <string name="boop_failed">Nie udało się zrobić boopa</string>
     <string name="boop_target_fallback">futrzakowi</string>
     <string name="boop_success_fmt">Zrobiono boopa %1$s! 🐾 (Zostało: %2$d)</string>
+    <string name="notification_action_boop_back">🐾 Odpowiedz boopem!</string>
+    <string name="boop_back_success_fmt">Oddano boopa %1$s! 🐾 (Zostało: %2$d)</string>
+    <string name="boop_back_title">🐾 Oddano boopa!</string>
 </resources>
 

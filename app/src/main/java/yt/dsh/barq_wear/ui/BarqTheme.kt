@@ -1,21 +1,17 @@
 package yt.dsh.barq_wear.ui
 
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.rotary.onPreRotaryScrollEvent
-import androidx.compose.ui.input.rotary.onRotaryScrollEvent
+import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
+import androidx.wear.compose.foundation.rotary.RotaryScrollableDefaults
+import androidx.wear.compose.foundation.rotary.rotaryScrollable
 import androidx.wear.compose.material.Colors
 import androidx.wear.compose.material.MaterialTheme
-import kotlinx.coroutines.launch
 
 val BarqOrange = Color(0xFFF76808)
 val BarqOrangeLight = Color(0xFFFF8B3D)
@@ -53,13 +49,12 @@ fun BarqWearTheme(content: @Composable () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalWearFoundationApi::class)
 @Composable
 fun Modifier.wearRotaryScroll(
-    listState: ScalingLazyListState,
-    speedMultiplier: Float = 1.8f
+    listState: ScalingLazyListState
 ): Modifier {
     val focusRequester = remember { FocusRequester() }
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         repeat(5) {
@@ -68,22 +63,12 @@ fun Modifier.wearRotaryScroll(
         }
     }
 
-    return this
-        .onPreRotaryScrollEvent { event ->
-            val delta = event.verticalScrollPixels * speedMultiplier
-            coroutineScope.launch {
-                listState.scrollBy(delta)
-            }
-            true
-        }
-        .onRotaryScrollEvent { event ->
-            val delta = event.verticalScrollPixels * speedMultiplier
-            coroutineScope.launch {
-                listState.scrollBy(delta)
-            }
-            true
-        }
-        .focusRequester(focusRequester)
-        .focusable()
+    return this.rotaryScrollable(
+        behavior = RotaryScrollableDefaults.behavior(
+            scrollableState = listState,
+            hapticFeedbackEnabled = true
+        ),
+        focusRequester = focusRequester
+    )
 }
 

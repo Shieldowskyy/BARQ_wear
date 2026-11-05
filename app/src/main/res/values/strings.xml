@@ -270,4 +270,7 @@
     <string name="boop_failed">Failed to boop</string>
     <string name="boop_target_fallback">fur</string>
     <string name="boop_success_fmt">Booped %1$s! 🐾 (%2$d left)</string>
+    <string name="notification_action_boop_back">🐾 Boop back!</string>
+    <string name="boop_back_success_fmt">Booped %1$s back! 🐾 (%2$d left)</string>
+    <string name="boop_back_title">🐾 Booped back!</string>
 </resources>

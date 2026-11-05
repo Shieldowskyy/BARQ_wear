@@ -104,6 +104,30 @@ object BarqNotificationHelper {
             builder.setLargeIcon(largeBitmap)
         }
 
+        // Quick action: "Boop back!" directly from notification without opening the app
+        val targetUuid = actor?.uuid
+        if (activity.type == "PROFILE_BOOPED" && !targetUuid.isNullOrBlank()) {
+            val boopBackIntent = Intent(context, BarqBoopBackReceiver::class.java).apply {
+                action = BarqBoopBackReceiver.ACTION_BOOP_BACK
+                putExtra(BarqBoopBackReceiver.EXTRA_TARGET_UUID, targetUuid)
+                putExtra(BarqBoopBackReceiver.EXTRA_TARGET_NAME, actorName)
+                putExtra(BarqBoopBackReceiver.EXTRA_NOTIFICATION_ID, NOTIFICATION_ID)
+            }
+            val boopBackPendingIntent = PendingIntent.getBroadcast(
+                context,
+                targetUuid.hashCode(),
+                boopBackIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            builder.addAction(
+                NotificationCompat.Action.Builder(
+                    R.mipmap.ic_launcher_round,
+                    context.getString(R.string.notification_action_boop_back),
+                    boopBackPendingIntent
+                ).build()
+            )
+        }
+
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }

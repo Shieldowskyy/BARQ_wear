@@ -95,6 +95,14 @@
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="1800" />
         </service>
+
+        <receiver
+            android:name=".sync.BarqBoopBackReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="yt.dsh.barq_wear.action.BOOP_BACK" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
