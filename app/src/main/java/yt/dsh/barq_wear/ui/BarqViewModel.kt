@@ -992,6 +992,7 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadActivities(forceRefresh: Boolean = false) {
         if (_uiState.value.isLoadingActivities) return
+        if (!forceRefresh && _uiState.value.activities.isNotEmpty()) return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingActivities = true, activitiesError = null) }
             val res = apiClient.fetchActivities(limit = 25)

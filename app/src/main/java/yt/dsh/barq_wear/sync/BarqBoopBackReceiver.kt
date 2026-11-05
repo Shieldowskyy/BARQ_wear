@@ -59,7 +59,7 @@ class BarqBoopBackReceiver : BroadcastReceiver() {
                         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         nm.notify(notificationId, updatedNotification)
                     },
-                    onFailure = { err ->
+                    onFailure = {
                         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         nm.cancel(notificationId)
                     }
