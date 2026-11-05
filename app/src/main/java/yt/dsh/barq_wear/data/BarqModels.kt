@@ -211,14 +211,38 @@ data class Sona(
     val species: Species? = null,
     val images: List<SonaImage>? = null
 ) {
-    fun mainImageUrl(showNsfw: Boolean = false, size: Int = 400): String? {
+    fun mainImageUrl(
+        showNsfw: Boolean = false,
+        size: Int = 400,
+        fallbackImages: List<ProfileImageItem>? = null
+    ): String? {
         val list = images.orEmpty()
         val filtered = if (showNsfw) {
             list
         } else {
-            list.filter { it.isAd != true && it.image?.contentRating != "explicit" }
+            list.filter { it.isAd != true && (it.image == null || it.image.contentRating != "explicit") }
         }
-        return filtered.firstOrNull()?.image?.resolvedUrl(size)
+
+        val direct = filtered.firstOrNull { it.image != null }?.image?.resolvedUrl(size)
+        if (direct != null) return direct
+
+        if (!fallbackImages.isNullOrEmpty()) {
+            val fallbackMap = fallbackImages.mapNotNull { item ->
+                if (item.image != null) item.id to item else null
+            }.toMap()
+
+            for (sonaImg in filtered) {
+                val matched = fallbackMap[sonaImg.id]
+                if (matched != null) {
+                    if (showNsfw || (matched.isAd != true && matched.image?.contentRating != "explicit")) {
+                        val url = matched.image?.resolvedUrl(size)
+                        if (url != null) return url
+                    }
+                }
+            }
+        }
+
+        return null
     }
 }
 
@@ -343,6 +367,29 @@ data class ProfileDetail(
     fun bannerUrl(isAd: Boolean = false, size: Int = 600): String? {
         val img = if (isAd) (headerImageAd ?: headerImage) else headerImage
         return img?.resolvedUrl(size)
+    }
+
+    fun withResolvedSonaImages(): ProfileDetail {
+        if (sonas.isNullOrEmpty() || images.isNullOrEmpty()) return this
+        val imageMap = images.mapNotNull { item ->
+            if (item.image != null) item.id to item else null
+        }.toMap()
+
+        val resolvedSonas = sonas.map { sona ->
+            val resolvedImages = sona.images?.map { sonaImg ->
+                val matched = imageMap[sonaImg.id]
+                if (matched != null) {
+                    sonaImg.copy(
+                        image = sonaImg.image ?: matched.image,
+                        isAd = sonaImg.isAd ?: matched.isAd
+                    )
+                } else {
+                    sonaImg
+                }
+            }
+            sona.copy(images = resolvedImages)
+        }
+        return copy(sonas = resolvedSonas)
     }
 
     val isLikedOrMutual: Boolean

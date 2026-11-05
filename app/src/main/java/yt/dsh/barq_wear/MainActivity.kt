@@ -391,7 +391,8 @@ fun BarqWearApp(viewModel: BarqViewModel) {
             composable("sona") {
                 SonaDetailScreen(
                     sona = uiState.selectedSona,
-                    showNsfw = uiState.showNsfw || uiState.isAdMode
+                    showNsfw = uiState.showNsfw || uiState.isAdMode,
+                    profileImages = uiState.selectedProfile?.images
                 )
             }
         }

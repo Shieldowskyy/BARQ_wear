@@ -603,7 +603,7 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
             val userObj = data.optObj("user")
             val profileEl: JsonElement? = userObj?.get("profile")
             val profile = if (profileEl != null && !profileEl.isJsonNull) {
-                gson.fromJson(profileEl, ProfileDetail::class.java)
+                gson.fromJson(profileEl, ProfileDetail::class.java)?.withResolvedSonaImages()
             } else null
 
             if (profile != null && profile.uuid.isNotBlank()) {
@@ -796,7 +796,7 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
             if (profileEl == null || profileEl.isJsonNull) {
                 throw IllegalStateException("Nie znaleziono profilu")
             }
-            gson.fromJson(profileEl, ProfileDetail::class.java)
+            gson.fromJson(profileEl, ProfileDetail::class.java).withResolvedSonaImages()
         }
     }
 

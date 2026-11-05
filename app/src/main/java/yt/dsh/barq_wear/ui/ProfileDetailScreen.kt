@@ -332,7 +332,8 @@ fun ProfileDetailScreen(
             }
 
             // Fursonas section
-            val sonas = detail.sonas.orEmpty()
+            val resolvedDetail = detail.withResolvedSonaImages()
+            val sonas = resolvedDetail.sonas.orEmpty()
             if (sonas.isNotEmpty()) {
                 item {
                     SectionHeader(title = stringResource(R.string.profile_section_sonas_fmt, sonas.size))
@@ -341,6 +342,7 @@ fun ProfileDetailScreen(
                     SonaCard(
                         sona = sona,
                         showNsfw = allowAdultContent,
+                        profileImages = resolvedDetail.images,
                         onClick = { onSonaClick(sona) }
                     )
                 }
@@ -902,10 +904,20 @@ private fun ProfileHeroHeader(detail: ProfileDetail, isAdMode: Boolean) {
 }
 
 @Composable
-private fun SonaCard(sona: Sona, showNsfw: Boolean, onClick: () -> Unit) {
-    val imgUrl = sona.mainImageUrl(showNsfw = showNsfw, size = 256)
-    val imageCount = sona.images?.count {
-        showNsfw || (it.isAd != true && it.image?.contentRating != "explicit")
+private fun SonaCard(
+    sona: Sona,
+    showNsfw: Boolean,
+    profileImages: List<ProfileImageItem>? = null,
+    onClick: () -> Unit
+) {
+    val imgUrl = sona.mainImageUrl(showNsfw = showNsfw, size = 256, fallbackImages = profileImages)
+    val imageCount = sona.images?.count { sonaImg ->
+        if (showNsfw) true
+        else if (sonaImg.isAd == true) false
+        else {
+            val rating = sonaImg.image?.contentRating ?: profileImages?.firstOrNull { it.id == sonaImg.id }?.image?.contentRating
+            rating != "explicit"
+        }
     } ?: 0
 
     Row(
@@ -920,9 +932,10 @@ private fun SonaCard(sona: Sona, showNsfw: Boolean, onClick: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF2B2B38)),
+                .size(46.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF2B2B38))
+                .border(1.5.dp, BarqOrange.copy(alpha = 0.7f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             if (imgUrl != null) {
@@ -930,7 +943,9 @@ private fun SonaCard(sona: Sona, showNsfw: Boolean, onClick: () -> Unit) {
                     model = imgUrl,
                     contentDescription = sona.displayName,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
                 )
             } else {
                 Icon(
@@ -1063,7 +1078,11 @@ private fun ProfileGalleryCard(
 }
 
 @Composable
-fun SonaDetailScreen(sona: Sona?, showNsfw: Boolean = false) {
+fun SonaDetailScreen(
+    sona: Sona?,
+    showNsfw: Boolean = false,
+    profileImages: List<ProfileImageItem>? = null
+) {
     val listState = rememberScalingLazyListState()
 
     Scaffold(
@@ -1083,9 +1102,15 @@ fun SonaDetailScreen(sona: Sona?, showNsfw: Boolean = false) {
             return@Scaffold
         }
 
+        val fallbackMap = profileImages?.filter { it.image != null }?.associateBy { it.id } ?: emptyMap()
         val images = sona.images.orEmpty()
-            .filter { showNsfw || (it.isAd != true && it.image?.contentRating != "explicit") }
-            .mapNotNull { it.image?.resolvedUrl(size = 600) }
+            .mapNotNull { sonaImg ->
+                val resolvedImg = sonaImg.image ?: fallbackMap[sonaImg.id]?.image
+                val isAd = sonaImg.isAd ?: fallbackMap[sonaImg.id]?.isAd ?: false
+                if (resolvedImg == null) null
+                else if (!showNsfw && (isAd || resolvedImg.contentRating == "explicit")) null
+                else resolvedImg.resolvedUrl(size = 600)
+            }
 
         ScalingLazyColumn(
             state = listState,
