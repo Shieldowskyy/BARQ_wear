@@ -239,6 +239,8 @@
     <string name="unmatch_dialog_msg">Czy na pewno chcesz cofnąć wzajemne polubienie z %1$s?</string>
     <string name="unlike_dialog_title">Cofnąć polubienie?</string>
     <string name="unlike_dialog_msg">Czy na pewno chcesz cofnąć polubienie profilu %1$s?</string>
+    <string name="logout_dialog_title">Wylogować?</string>
+    <string name="logout_dialog_msg">Czy na pewno chcesz się wylogować z BARQ!? Aby zalogować się ponownie, konieczne będzie ponowne zeskanowanie kodu QR.</string>
     <string name="dialog_confirm">Zatwierdź</string>
     <string name="dialog_cancel">Anuluj</string>
 

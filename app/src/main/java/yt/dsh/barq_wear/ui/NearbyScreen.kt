@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
@@ -48,6 +49,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Wc
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,6 +83,7 @@ import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.CompactChip
 import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Switch
@@ -91,6 +94,8 @@ import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.ToggleChipDefaults
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
+import androidx.wear.compose.material.dialog.Alert
+import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.input.RemoteInputIntentHelper
 import yt.dsh.barq_wear.R
 import yt.dsh.barq_wear.data.BarqFilterOptions
@@ -1631,6 +1636,7 @@ fun MyAccountScreen(
     onLogout: () -> Unit
 ) {
     val listState = rememberScalingLazyListState()
+    var showLogoutConfirmation by remember { mutableStateOf(false) }
     val user = uiState.currentUser
     val profile = user?.profile
 
@@ -1903,7 +1909,7 @@ fun MyAccountScreen(
 
             item {
                 Chip(
-                    onClick = onLogout,
+                    onClick = { showLogoutConfirmation = true },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ChipDefaults.secondaryChipColors(backgroundColor = Color(0xFF3B1219)),
                     label = {
@@ -1916,6 +1922,63 @@ fun MyAccountScreen(
                     }
                 )
             }
+        }
+
+        Dialog(
+            showDialog = showLogoutConfirmation,
+            onDismissRequest = { showLogoutConfirmation = false }
+        ) {
+            Alert(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = BarqOrange,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.logout_dialog_title),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.title3,
+                        color = Color.White
+                    )
+                },
+                negativeButton = {
+                    Button(
+                        onClick = { showLogoutConfirmation = false },
+                        colors = ButtonDefaults.secondaryButtonColors()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.dialog_cancel)
+                        )
+                    }
+                },
+                positiveButton = {
+                    Button(
+                        onClick = {
+                            showLogoutConfirmation = false
+                            onLogout()
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFDC2626))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(R.string.dialog_confirm)
+                        )
+                    }
+                },
+                content = {
+                    Text(
+                        text = stringResource(R.string.logout_dialog_msg),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.body2,
+                        color = Color(0xFFD1D5DB)
+                    )
+                }
+            )
         }
     }
 }

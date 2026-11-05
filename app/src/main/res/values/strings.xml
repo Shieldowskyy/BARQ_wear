@@ -245,6 +245,8 @@
     <string name="unmatch_dialog_msg">Are you sure you want to remove mutual match with %1$s?</string>
     <string name="unlike_dialog_title">Undo like?</string>
     <string name="unlike_dialog_msg">Are you sure you want to unlike %1$s?</string>
+    <string name="logout_dialog_title">Log out?</string>
+    <string name="logout_dialog_msg">Are you sure you want to log out of BARQ!? You will need to scan the QR code again to sign back in.</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_cancel">Cancel</string>
 
