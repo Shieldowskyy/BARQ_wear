@@ -252,4 +252,22 @@
     <!-- Wear OS Complications -->
     <string name="complication_label">BARQ! Nearby Furs</string>
     <string name="complication_description">Shows number of nearby furs and distance to closest profile</string>
+
+    <!-- Activities & Boops -->
+    <string name="activities_title">Activities</string>
+    <string name="activities_subtitle">Recent social events</string>
+    <string name="activities_loading">Loading activities…</string>
+    <string name="activities_empty">No recent activities 🐾</string>
+    <string name="activities_mark_read">Mark all as read</string>
+    <string name="activities_error_fetch">Failed to load activities</string>
+    <string name="activity_type_booped">Booped you! 🐾</string>
+    <string name="activity_type_liked">Liked your profile! ❤️</string>
+    <string name="activity_type_matched">New mutual match! 🎉</string>
+    <string name="activity_type_image_liked">Liked your photo! 📸</string>
+    <string name="account_activities_unread_fmt">Activities (%1$d new)</string>
+    <string name="boop_button">Boop! 🐾</string>
+    <string name="boop_remaining_fmt">Boop! 🐾 (%1$d left)</string>
+    <string name="boop_failed">Failed to boop</string>
+    <string name="boop_target_fallback">fur</string>
+    <string name="boop_success_fmt">Booped %1$s! 🐾 (%2$d left)</string>
 </resources>

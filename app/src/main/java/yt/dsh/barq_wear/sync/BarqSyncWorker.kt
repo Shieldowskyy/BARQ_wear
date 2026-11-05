@@ -35,6 +35,21 @@ class BarqSyncWorker(
         val savedPlace = authManager.getSavedPlace()
         val isAd = authManager.isAdModeEnabled()
 
+        // Sync background notifications for Boops, Likes & Matches (energy-efficient, piggybacked on periodic sync)
+        runCatching {
+            val activitiesResult = apiClient.fetchActivities(limit = 10)
+            activitiesResult.getOrNull()?.let { activities ->
+                val newest = activities.firstOrNull()
+                if (newest != null && newest.readAt == null) {
+                    val lastNotified = authManager.getLastNotifiedActivityId()
+                    if (lastNotified != newest.id) {
+                        BarqNotificationHelper.showActivityNotification(applicationContext, newest)
+                        authManager.setLastNotifiedActivityId(newest.id)
+                    }
+                }
+            }
+        }
+
         val result = apiClient.searchProfiles(
             searchFilters = BarqSearchFilters(),
             isAd = isAd,

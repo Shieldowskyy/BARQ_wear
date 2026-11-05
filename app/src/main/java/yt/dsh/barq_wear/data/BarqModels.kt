@@ -361,8 +361,44 @@ data class CurrentUser(
     val isExplicitContentOptIn: Boolean = false,
     val likeCount: Int = 0,
     val mutualCount: Int = 0,
-    val unreadMessagesCount: Int = 0
+    val unreadMessagesCount: Int = 0,
+    val unreadActivitiesCount: Int = 0,
+    val boopBalance: Int? = null
 )
+
+data class ActivityItem(
+    val id: String,
+    val type: String,
+    val createdAt: String? = null,
+    val readAt: String? = null,
+    val payload: com.google.gson.JsonElement? = null,
+    val sourceProfile: OverviewProfile? = null
+) {
+    val isUnread: Boolean
+        get() = readAt == null
+
+    val boopCount: Int
+        get() = runCatching {
+            payload?.takeIf { it.isJsonObject }?.asJsonObject?.get("count")?.asInt ?: 1
+        }.getOrDefault(1)
+
+    fun formattedTime(): String {
+        val raw = createdAt ?: return ""
+        return runCatching {
+            val instant = java.time.Instant.parse(raw)
+            val now = java.time.Instant.now()
+            val diffSec = java.time.Duration.between(instant, now).seconds.coerceAtLeast(0)
+            when {
+                diffSec < 60 -> "now"
+                diffSec < 3600 -> "${diffSec / 60}m"
+                diffSec < 86400 -> "${diffSec / 3600}h"
+                else -> "${diffSec / 86400}d"
+            }
+        }.getOrElse {
+            raw.take(10)
+        }
+    }
+}
 
 enum class RelationListType {
     MUTUALS,

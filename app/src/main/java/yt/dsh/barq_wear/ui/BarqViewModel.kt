@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import yt.dsh.barq_wear.R
+import yt.dsh.barq_wear.data.ActivityItem
 import yt.dsh.barq_wear.data.BarqApiClient
 import yt.dsh.barq_wear.data.BarqAuthManager
 import yt.dsh.barq_wear.data.BarqSearchFilters
@@ -21,6 +22,7 @@ import yt.dsh.barq_wear.data.QrAuthSession
 import yt.dsh.barq_wear.data.QrPollResult
 import yt.dsh.barq_wear.data.RelationListType
 import yt.dsh.barq_wear.data.Sona
+import yt.dsh.barq_wear.sync.BarqNotificationHelper
 import yt.dsh.barq_wear.tile.BarqTileRenderer
 import coil.Coil
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +91,14 @@ data class BarqUiState(
     val isLoadingNews: Boolean = false,
     val newsError: String? = null,
     val selectedNewsItem: NewsItem? = null,
-    val isLoadingNewsDetail: Boolean = false
+    val isLoadingNewsDetail: Boolean = false,
+
+    val activities: List<ActivityItem> = emptyList(),
+    val isLoadingActivities: Boolean = false,
+    val activitiesError: String? = null,
+    val boopBalance: Int? = null,
+    val isBoopingProfile: Boolean = false,
+    val boopStatusMessage: String? = null
 ) {
     val searchQuery: String
         get() = filters.displayName
@@ -121,7 +130,8 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
             myProfileUuid = authManager.getMyProfileUuid(),
             isAdMode = authManager.isAdModeEnabled(),
             showNsfw = authManager.isNsfwEnabled(),
-            needsAdNsfwOnboarding = authManager.isLoggedIn() && !authManager.hasAskedAdNsfwOnboarding()
+            needsAdNsfwOnboarding = authManager.isLoggedIn() && !authManager.hasAskedAdNsfwOnboarding(),
+            boopBalance = authManager.getLastKnownBoopBalance()
         )
     )
     val uiState: StateFlow<BarqUiState> = _uiState.asStateFlow()
@@ -901,6 +911,87 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+    }
+
+    fun loadActivities(forceRefresh: Boolean = false) {
+        if (_uiState.value.isLoadingActivities) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingActivities = true, activitiesError = null) }
+            val res = apiClient.fetchActivities(limit = 25)
+            res.fold(
+                onSuccess = { activities ->
+                    _uiState.update {
+                        it.copy(
+                            activities = activities,
+                            isLoadingActivities = false,
+                            activitiesError = null
+                        )
+                    }
+                },
+                onFailure = { err ->
+                    _uiState.update {
+                        it.copy(
+                            isLoadingActivities = false,
+                            activitiesError = err.message ?: str(R.string.activities_error_fetch)
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun markActivitiesAsRead() {
+        viewModelScope.launch {
+            val res = apiClient.markActivitiesAsRead()
+            if (res.isSuccess) {
+                _uiState.update { state ->
+                    val updatedActivities = state.activities.map { item ->
+                        if (item.readAt == null) item.copy(readAt = "read") else item
+                    }
+                    val updatedUser = state.currentUser?.copy(unreadActivitiesCount = 0)
+                    state.copy(
+                        activities = updatedActivities,
+                        currentUser = updatedUser
+                    )
+                }
+            }
+        }
+    }
+
+    fun boopProfile(profileUuid: String, targetName: String? = null) {
+        if (_uiState.value.isBoopingProfile) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isBoopingProfile = true, boopStatusMessage = null) }
+            BarqNotificationHelper.vibrateBoop(getApplication())
+            val res = apiClient.boopProfile(profileUuid)
+            res.fold(
+                onSuccess = { newBalance ->
+                    authManager.setLastKnownBoopBalance(newBalance)
+                    val name = targetName?.takeIf { it.isNotBlank() } ?: str(R.string.boop_target_fallback)
+                    val msg = str(R.string.boop_success_fmt, name, newBalance)
+                    _uiState.update {
+                        it.copy(
+                            isBoopingProfile = false,
+                            boopBalance = newBalance,
+                            boopStatusMessage = msg
+                        )
+                    }
+                },
+                onFailure = { err ->
+                    val errorMsg = err.message ?: str(R.string.boop_failed)
+                    _uiState.update {
+                        it.copy(
+                            isBoopingProfile = false,
+                            boopStatusMessage = errorMsg
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun clearBoopStatusMessage() {
+        _uiState.update { it.copy(boopStatusMessage = null) }
     }
 }
 

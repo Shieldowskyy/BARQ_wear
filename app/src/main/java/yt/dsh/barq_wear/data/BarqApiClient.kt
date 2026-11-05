@@ -368,6 +368,39 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
             }
         """
 
+        private const val QUERY_ACTIVITIES = """
+            query UserActivities(${'$'}limit: Int) {
+              user {
+                activities(limit: ${'$'}limit) {
+                  id
+                  type
+                  createdAt
+                  readAt
+                  payload
+                  sourceProfile {
+                    ...OverviewProfileFragment
+                    ...ProfilePrimaryImagesFragment
+                  }
+                }
+              }
+            }
+            $FRAGMENTS_SEARCH
+        """
+
+        private const val MUTATION_MARK_ACTIVITIES_READ = """
+            mutation MarkActivitiesAsRead {
+              markActivitiesAsRead
+            }
+        """
+
+        private const val MUTATION_BOOP_PROFILE = """
+            mutation BoopProfile(${'$'}profileUuid: String!) {
+              boopProfile(profileUuid: ${'$'}profileUuid) {
+                balance
+              }
+            }
+        """
+
         private const val MUTATION_LOCK_AD_MODE = """
             mutation UserLockAdMode {
               userLockAdMode
@@ -537,6 +570,12 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
                 return null
             }
             val str = resp.body?.string().orEmpty()
+            if (str.isNotBlank()) {
+                val json = runCatching { JsonParser.parseString(str).asJsonObject }.getOrNull()
+                if (json != null) {
+                    return json
+                }
+            }
             if (!resp.isSuccessful || str.isBlank()) {
                 throw IllegalStateException("Błąd HTTP ${resp.code}")
             }
@@ -575,13 +614,17 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
                 ?.optObj("chatActivity")
                 ?.optInt("unreadMessageCount") ?: 0
 
+            val unreadActivities = userObj?.optObj("activitySummary")
+                ?.optInt("unreadActivitiesCount") ?: 0
+
             CurrentUser(
                 profile = profile,
                 isAdOptIn = userObj?.optBool("isAdOptIn") ?: false,
                 isExplicitContentOptIn = userObj?.optBool("isExplicitContentOptIn") ?: false,
                 likeCount = userObj?.optInt("likeCount") ?: 0,
                 mutualCount = userObj?.optInt("mutualCount") ?: 0,
-                unreadMessagesCount = unreadChat
+                unreadMessagesCount = unreadChat,
+                unreadActivitiesCount = unreadActivities
             )
         }
     }
@@ -831,6 +874,34 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
         val field = if (unlocked) "userUnlockAdMode" else "userLockAdMode"
         return executeGraphQl(opName, query).mapCatching { data ->
             data.optBool(field, unlocked)
+        }
+    }
+
+    suspend fun fetchActivities(limit: Int = 30): Result<List<ActivityItem>> {
+        val vars = mapOf("limit" to limit)
+        return executeGraphQl("UserActivities", QUERY_ACTIVITIES, vars).mapCatching { data ->
+            val userObj = data.optObj("user")
+            val rawList = userObj?.getAsJsonArray("activities")
+            if (rawList != null && !rawList.isJsonNull) {
+                val listType = object : TypeToken<List<ActivityItem>>() {}.type
+                gson.fromJson<List<ActivityItem>>(rawList, listType)
+            } else {
+                emptyList()
+            }
+        }
+    }
+
+    suspend fun markActivitiesAsRead(): Result<Boolean> {
+        return executeGraphQl("MarkActivitiesAsRead", MUTATION_MARK_ACTIVITIES_READ).mapCatching { data ->
+            data.optBool("markActivitiesAsRead", true)
+        }
+    }
+
+    suspend fun boopProfile(profileUuid: String): Result<Int> {
+        val vars = mapOf("profileUuid" to profileUuid.trim())
+        return executeGraphQl("BoopProfile", MUTATION_BOOP_PROFILE, vars).mapCatching { data ->
+            val boopObj = data.optObj("boopProfile")
+            boopObj?.optInt("balance", 0) ?: 0
         }
     }
 }

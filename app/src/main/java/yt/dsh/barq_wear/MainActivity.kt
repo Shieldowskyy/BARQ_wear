@@ -1,20 +1,27 @@
 package yt.dsh.barq_wear
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import yt.dsh.barq_wear.data.BarqAuthManager
+import yt.dsh.barq_wear.ui.ActivitiesScreen
 import yt.dsh.barq_wear.ui.AdNsfwOnboardingScreen
 import yt.dsh.barq_wear.ui.BarqViewModel
 import yt.dsh.barq_wear.ui.BarqWearTheme
@@ -146,6 +153,18 @@ fun BarqWearApp(viewModel: BarqViewModel) {
 
         val navController = rememberSwipeDismissableNavController()
 
+        val notificationPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { /* permission handled */ }
+
+        LaunchedEffect(Unit) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
+
         LaunchedEffect(uiState.pendingTileProfileUuid) {
             val targetUuid = uiState.pendingTileProfileUuid
             if (!targetUuid.isNullOrBlank()) {
@@ -190,6 +209,9 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                     },
                     onClearSearch = {
                         viewModel.clearSearchFilters()
+                    },
+                    onOpenActivities = {
+                        navController.navigate("activities")
                     }
                 )
             }
@@ -248,6 +270,9 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                         viewModel.loadRelationProfiles(type)
                         navController.navigate("relations")
                     },
+                    onOpenActivities = {
+                        navController.navigate("activities")
+                    },
                     onOpenNews = {
                         viewModel.loadNewsItems()
                         navController.navigate("news")
@@ -295,6 +320,22 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                 NewsDetailScreen(uiState = uiState)
             }
 
+            composable("activities") {
+                ActivitiesScreen(
+                    uiState = uiState,
+                    onLoadActivities = {
+                        viewModel.loadActivities()
+                    },
+                    onMarkActivitiesRead = {
+                        viewModel.markActivitiesAsRead()
+                    },
+                    onProfileClick = { uuid ->
+                        viewModel.loadProfileDetail(uuid)
+                        navController.navigate("profile/$uuid")
+                    }
+                )
+            }
+
             composable("settings") {
                 SettingsScreen(
                     uiState = uiState,
@@ -340,6 +381,9 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                     onSonaClick = { sona ->
                         viewModel.selectSona(sona)
                         navController.navigate("sona")
+                    },
+                    onBoopProfile = { targetUuid, targetName ->
+                        viewModel.boopProfile(targetUuid, targetName)
                     }
                 )
             }

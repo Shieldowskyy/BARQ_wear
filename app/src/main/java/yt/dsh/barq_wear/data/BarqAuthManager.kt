@@ -232,6 +232,21 @@ class BarqAuthManager(private val context: Context) {
         }.getOrNull().orEmpty()
     }
 
+    fun getLastNotifiedActivityId(): String? = prefs.getString("last_notified_activity_id", null)
+
+    fun setLastNotifiedActivityId(id: String) {
+        prefs.edit().putString("last_notified_activity_id", id.trim()).apply()
+    }
+
+    fun getLastKnownBoopBalance(): Int? {
+        val b = prefs.getInt("last_known_boop_balance", -1)
+        return if (b >= 0) b else null
+    }
+
+    fun setLastKnownBoopBalance(balance: Int) {
+        prefs.edit().putInt("last_known_boop_balance", balance).apply()
+    }
+
     fun saveTokens(accessToken: String, refreshToken: String?, expiresInSeconds: Long = 3600L) {
         val expiresAt = System.currentTimeMillis() + (expiresInSeconds * 1000L)
         prefs.edit().apply {
