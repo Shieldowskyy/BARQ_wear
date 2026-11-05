@@ -105,12 +105,15 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
    cd BARQ_wear
    ```
 
-2. **Build the debug APK**:
+2. **Build the debug or release APK**:
    ```bash
    ./gradlew assembleDebug
+   # or for an optimized release build:
+   ./gradlew assembleRelease
    ```
-   The compiled APK will be generated at:
-   `app/build/outputs/apk/debug/app-debug.apk`
+   The compiled APK will be generated with full version and architecture info, e.g.:
+   `app/build/outputs/apk/debug/BARQ_wear-v1.0.0-universal-debug.apk`
+   `app/build/outputs/apk/release/BARQ_wear-v1.0.0-universal-release.apk`
 
 3. **Install on a connected Wear OS device or emulator**:
    ```bash

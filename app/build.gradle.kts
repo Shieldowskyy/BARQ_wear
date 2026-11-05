@@ -59,6 +59,18 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    applicationVariants.all {
+        val variantName = name
+        val vName = versionName
+        outputs.all {
+            val output = this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            if (output != null) {
+                val abiFilter = output.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
+                output.outputFileName = "BARQ_wear-v${vName}-${abiFilter}-${variantName}.apk"
+            }
+        }
+    }
 }
 
 dependencies {

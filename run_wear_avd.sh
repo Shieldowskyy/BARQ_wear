@@ -6,12 +6,16 @@ ADB="$SDK_DIR/platform-tools/adb"
 EMULATOR="$SDK_DIR/emulator/emulator"
 AVD_NAME="${AVD_NAME:-Wear_OS_Large_Round_API_34}"
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
-APK_PATH="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
 
 cd "$PROJECT_DIR"
 
 echo "==> [1/4] Building debug APK (assembleDebug)..."
 ./gradlew assembleDebug
+
+APK_PATH=$(find "$PROJECT_DIR/app/build/outputs/apk/debug" -name "BARQ_wear-*.apk" 2>/dev/null | head -n 1)
+if [ -z "$APK_PATH" ]; then
+    APK_PATH=$(find "$PROJECT_DIR/app/build/outputs/apk/debug" -name "*.apk" 2>/dev/null | head -n 1)
+fi
 
 # Check if any Wear OS emulator or device is already connected
 SERIAL=$("$ADB" devices | awk 'NR>1 && $2=="device" {print $1; exit}')
