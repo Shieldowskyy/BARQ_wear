@@ -379,6 +379,7 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
                   payload
                   sourceProfile {
                     ...OverviewProfileFragment
+                    ...ProfilePrimaryImagesFragment
                   }
                 }
               }
@@ -569,6 +570,12 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
                 return null
             }
             val str = resp.body?.string().orEmpty()
+            if (str.isNotBlank()) {
+                val json = runCatching { JsonParser.parseString(str).asJsonObject }.getOrNull()
+                if (json != null) {
+                    return json
+                }
+            }
             if (!resp.isSuccessful || str.isBlank()) {
                 throw IllegalStateException("Błąd HTTP ${resp.code}")
             }
