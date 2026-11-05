@@ -8,6 +8,22 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
 
 ---
 
+## 📸 Screenshots
+
+<div align="center">
+
+| **Nearby & Action Bar** | **Nearby Furs List** | **Profile & Fursonas** | **Activities & Boops** |
+| :---: | :---: | :---: | :---: |
+| <img src="screenshots/nearby.png" width="200" alt="Nearby Screen" /> | <img src="screenshots/nearby_list.png" width="200" alt="Nearby List" /> | <img src="screenshots/profile.png" width="200" alt="Profile Screen" /> | <img src="screenshots/activities.png" width="200" alt="Activities Screen" /> |
+
+| **My Account** | **Search Filters** | **Settings & Mode** | **Background Auto GPS** |
+| :---: | :---: | :---: | :---: |
+| <img src="screenshots/account.png" width="200" alt="My Account Screen" /> | <img src="screenshots/filters.png" width="200" alt="Search Filters" /> | <img src="screenshots/settings_top.png" width="200" alt="Settings Screen" /> | <img src="screenshots/settings_gps.png" width="200" alt="Background GPS Settings" /> |
+
+</div>
+
+---
+
 ## ✨ Features
 
 - **🔐 Standalone Authentication**:
@@ -15,13 +31,18 @@ Browse nearby profiles sorted by distance, filter users with a watch-friendly me
   - **Manual Token Input**: Paste an `ory_at_...` (Access Token) or `ory_rt_...` (Refresh Token) via the watch keyboard/remote input.
   - **ADB Deep Link**: Quickly inject tokens during development or from a companion device via `barq://token`.
   - **Automatic Token Refresh**: Seamlessly refreshes expired access tokens using the stored `ory_rt_` refresh token.
-- **📍 Nearby Grid & Distance Sorting**:
+- **📍 Nearby Grid, Distance Sorting & Wear-Optimized Action Bar**:
   - Displays nearby profiles sorted from **closest to furthest (`km`)**.
+  - **Ergonomic 2-Row Round Action Bar**: Perfectly fits circular watch faces (such as Galaxy Watch 4/5/6/7 and Pixel Watch). Top row features the **Activities / Notifications Bell** (with real-time unread badge counter) and **My Profile** avatar; bottom row hosts **Filters/Search**, **Update GPS**, and **Refresh**.
   - Supports rotary crown/bezel scrolling and infinite pagination.
-- **🧭 GPS & Manual City Search**:
+- **🧭 GPS, Manual City Search & Battery-Safe Background Auto-Sync**:
   - Uses the watch's built-in GPS when available (`UpdateGpsLocation`).
+  - **Background GPS Auto-Sync (WorkManager)**: Configurable in Settings (`Disabled`, `Every 1 hour`, `Every 3 hours`, `Every 6 hours`). Uses battery-safe cached network/phone location (`getLastKnownLocation`) to refresh your city in the background without draining watch battery.
   - **Manual City Search (`Places` GraphQL query)**: Search and select any city worldwide when GPS is unavailable or disabled.
   - **Persistent City Selection**: Your chosen city is saved across app restarts and sessions.
+- **🔔 Activities & Notifications Center**:
+  - Instant access via the top-bar bell icon or **My Account**.
+  - Displays incoming **Boops 🐾**, mutual matches 🎉, and friend requests with relative timestamps.
 - **🎛️ Wear OS Search Filters**:
   - **Display Name** search
   - **Age Range** (`Min` / `Max` with `- / +` steppers, presets, and manual input)
