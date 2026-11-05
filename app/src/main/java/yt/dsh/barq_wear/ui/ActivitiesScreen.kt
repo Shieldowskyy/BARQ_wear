@@ -263,11 +263,7 @@ private fun ActivityCard(
             Triple(Icons.Default.PhotoCamera, BarqSky, stringResource(R.string.activity_type_image_liked))
         }
         else -> {
-            if (activity.type.startsWith("TRICK_OR_TREAT")) {
-                Triple(Icons.Default.Celebration, BarqOrangeLight, "Trick or Treat! 🍬")
-            } else {
-                Triple(Icons.Default.Notifications, BarqOrangeLight, activity.type)
-            }
+            Triple(Icons.Default.Notifications, BarqOrangeLight, activity.type)
         }
     }
 
@@ -375,4 +371,3 @@ private fun ActivityCard(
         }
     }
 }
-

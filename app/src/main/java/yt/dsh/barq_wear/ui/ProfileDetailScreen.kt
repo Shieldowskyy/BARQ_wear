@@ -187,68 +187,62 @@ fun ProfileDetailScreen(
                             )
                         }
                     )
-                }
 
-                // Boop button (only available for mutuals and friends per BARQ API rules)
-                val canBoop = detail.relationType in listOf("mutual", "friend")
-                if (canBoop) {
-                    item {
+                    // Boop button (only available for mutuals and friends per BARQ API rules)
+                    val canBoop = detail.relationType in listOf("mutual", "friend")
+                    if (canBoop) {
+                        Spacer(modifier = Modifier.height(4.dp))
                         val boopBalance = uiState.boopBalance
-                        val boopLabel = if (boopBalance != null && boopBalance >= 0) {
+                        val boopLabel = if (boopBalance != null) {
                             stringResource(R.string.boop_remaining_fmt, boopBalance)
                         } else {
                             stringResource(R.string.boop_button)
                         }
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Chip(
-                                onClick = { onBoopProfile(detail.uuid, detail.displayName) },
-                                enabled = !uiState.isBoopingProfile && (boopBalance == null || boopBalance > 0),
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ChipDefaults.primaryChipColors(
-                                    backgroundColor = BarqOrange,
-                                    contentColor = Color.White
-                                ),
-                                icon = {
-                                    if (uiState.isBoopingProfile) {
-                                        CircularProgressIndicator(
-                                            indicatorColor = Color.White,
-                                            strokeWidth = 2.dp,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    } else {
-                                        Icon(
-                                            imageVector = Icons.Default.Pets,
-                                            contentDescription = null,
-                                            tint = Color.White
-                                        )
-                                    }
-                                },
-                                label = {
-                                    Text(
-                                        text = boopLabel,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                        Chip(
+                            onClick = { onBoopProfile(detail.uuid, detail.displayName) },
+                            enabled = !uiState.isBoopingProfile && (boopBalance == null || boopBalance > 0),
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ChipDefaults.primaryChipColors(
+                                backgroundColor = BarqOrange,
+                                contentColor = Color.White
+                            ),
+                            icon = {
+                                if (uiState.isBoopingProfile) {
+                                    CircularProgressIndicator(
+                                        indicatorColor = Color.White,
+                                        strokeWidth = 2.dp,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.Pets,
+                                        contentDescription = null,
+                                        tint = Color.White
                                     )
                                 }
-                            )
-
-                            if (!uiState.boopStatusMessage.isNullOrBlank()) {
-                                Spacer(modifier = Modifier.height(3.dp))
+                            },
+                            label = {
                                 Text(
-                                    text = uiState.boopStatusMessage,
-                                    color = BarqOrangeLight,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                    text = boopLabel,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
-                        }
+                        )
+                    }
+
+                    if (!uiState.boopStatusMessage.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = uiState.boopStatusMessage,
+                            color = BarqOrangeLight,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
                     }
                 }
             }
