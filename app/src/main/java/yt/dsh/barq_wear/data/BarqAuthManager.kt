@@ -102,6 +102,8 @@ class BarqAuthManager(private val context: Context) {
         private const val KEY_AD_ONBOARDING_ASKED = "ad_nsfw_onboarding_asked"
         private const val KEY_AD_MODE_ENABLED = "ad_mode_enabled"
         private const val KEY_NSFW_ENABLED = "nsfw_enabled"
+        private const val KEY_GPS_AUTO_SYNC_HOURS = "gps_auto_sync_hours"
+        private const val KEY_LAST_GPS_SYNC_TS = "last_gps_sync_timestamp"
     }
 
     private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -172,6 +174,22 @@ class BarqAuthManager(private val context: Context) {
 
     fun setNsfwEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_NSFW_ENABLED, enabled).apply()
+    }
+
+    fun getGpsAutoSyncHours(): Int {
+        return prefs.getInt(KEY_GPS_AUTO_SYNC_HOURS, 0)
+    }
+
+    fun setGpsAutoSyncHours(hours: Int) {
+        prefs.edit().putInt(KEY_GPS_AUTO_SYNC_HOURS, hours).apply()
+    }
+
+    fun getLastGpsSyncTimestamp(): Long {
+        return prefs.getLong(KEY_LAST_GPS_SYNC_TS, 0L)
+    }
+
+    fun setLastGpsSyncTimestamp(timestamp: Long) {
+        prefs.edit().putLong(KEY_LAST_GPS_SYNC_TS, timestamp).apply()
     }
 
     fun saveSelectedPlace(place: Place) {

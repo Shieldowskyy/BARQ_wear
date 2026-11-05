@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Gemini & Google Assistant App Action Capability -->
+    <capability android:name="actions.intent.OPEN_APP_FEATURE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <parameter
+                android:name="feature"
+                android:key="feature" />
+        </intent>
+    </capability>
+
+    <!-- 1. Nearby Screen -->
+    <shortcut
+        android:shortcutId="shortcut_nearby"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_nearby_short"
+        android:shortcutLongLabel="@string/shortcut_nearby_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://nearby"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="nearby" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_nearby_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 2. Profile Screen (My Profile) -->
+    <shortcut
+        android:shortcutId="shortcut_profile"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_profile_short"
+        android:shortcutLongLabel="@string/shortcut_profile_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://profile"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="profile" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_profile_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 3. Account Screen -->
+    <shortcut
+        android:shortcutId="shortcut_account"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_account_short"
+        android:shortcutLongLabel="@string/shortcut_account_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://account"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="account" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_account_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 4. Activities / Notifications -->
+    <shortcut
+        android:shortcutId="shortcut_activities"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_activities_short"
+        android:shortcutLongLabel="@string/shortcut_activities_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://activities"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="activities" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_activities_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 5. News Screen -->
+    <shortcut
+        android:shortcutId="shortcut_news"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_news_short"
+        android:shortcutLongLabel="@string/shortcut_news_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://news"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="news" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_news_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 6. Relations Screen -->
+    <shortcut
+        android:shortcutId="shortcut_relations"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_relations_short"
+        android:shortcutLongLabel="@string/shortcut_relations_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://relations"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="relations" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_relations_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 7. Search & Filters Screen -->
+    <shortcut
+        android:shortcutId="shortcut_filters"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_filters_short"
+        android:shortcutLongLabel="@string/shortcut_filters_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://filters"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="filters" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_filters_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 8. Location Screen -->
+    <shortcut
+        android:shortcutId="shortcut_location"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_location_short"
+        android:shortcutLongLabel="@string/shortcut_location_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://location"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="location" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_location_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+    <!-- 9. Settings Screen -->
+    <shortcut
+        android:shortcutId="shortcut_settings"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher_round"
+        android:shortcutShortLabel="@string/shortcut_settings_short"
+        android:shortcutLongLabel="@string/shortcut_settings_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="barq://settings"
+            android:targetClass="yt.dsh.barq_wear.MainActivity"
+            android:targetPackage="yt.dsh.barq_wear">
+            <extra
+                android:name="feature"
+                android:value="settings" />
+        </intent>
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/feature_settings_synonyms" />
+        </capability-binding>
+    </shortcut>
+
+</shortcuts>

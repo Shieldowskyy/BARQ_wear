@@ -1,7 +1,12 @@
 package yt.dsh.barq_wear.sync
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import androidx.core.content.ContextCompat
 import androidx.wear.tiles.TileService
 import androidx.wear.watchface.complications.datasource.ComplicationDataSourceUpdateRequester
 import androidx.work.CoroutineWorker
@@ -10,11 +15,13 @@ import yt.dsh.barq_wear.complication.BarqComplicationService
 import yt.dsh.barq_wear.data.BarqApiClient
 import yt.dsh.barq_wear.data.BarqAuthManager
 import yt.dsh.barq_wear.data.BarqSearchFilters
+import yt.dsh.barq_wear.data.Place
 import yt.dsh.barq_wear.tile.BarqCompactTileService
 import yt.dsh.barq_wear.tile.BarqFullTileService
 
 /**
  * Background worker that periodically syncs nearby furs, updates local cache,
+ * checks and updates watch city/location (if enabled),
  * and refreshes Wear OS Tiles and Complications.
  */
 class BarqSyncWorker(
@@ -32,6 +39,50 @@ class BarqSyncWorker(
             return Result.retry()
         }
         val apiClient = BarqApiClient(authManager)
+
+        // Ultra energy-efficient background GPS location update (if enabled by user in settings)
+        val gpsAutoSyncHours = authManager.getGpsAutoSyncHours()
+        if (gpsAutoSyncHours > 0) {
+            val lastGpsSync = authManager.getLastGpsSyncTimestamp()
+            val now = System.currentTimeMillis()
+            val intervalMillis = gpsAutoSyncHours * 60 * 60 * 1000L
+            if (now - lastGpsSync >= intervalMillis) {
+                runCatching {
+                    val hasFine = ContextCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                    val hasCoarse = ContextCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                    if (hasFine || hasCoarse) {
+                        val lm = applicationContext.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+                        if (lm != null) {
+                            val providers = lm.getProviders(true)
+                            var bestLocation: Location? = null
+                            for (provider in providers) {
+                                val loc = lm.getLastKnownLocation(provider) ?: continue
+                                if (bestLocation == null || loc.accuracy < bestLocation.accuracy) {
+                                    bestLocation = loc
+                                }
+                            }
+                            if (bestLocation != null) {
+                                val updatedPlace = apiClient.updateGpsLocation(bestLocation.latitude, bestLocation.longitude).getOrNull()
+                                val resolvedPlace = updatedPlace ?: Place(
+                                    latitude = bestLocation.latitude,
+                                    longitude = bestLocation.longitude
+                                )
+                                authManager.saveSelectedPlace(resolvedPlace)
+                                authManager.setLastGpsSyncTimestamp(now)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         val savedPlace = authManager.getSavedPlace()
         val isAd = authManager.isAdModeEnabled()
 

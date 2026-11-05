@@ -175,147 +175,161 @@ fun NearbyScreen(
                 }
             }
 
-            // Action bar: Filters/Search, GPS, Refresh, Notifications, Account
+            // Action bar:
+            // Top row: Bell (Activities) with unread badge + Profile (Account)
+            // Bottom row: Filters/Search, GPS, Refresh
             item {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.padding(vertical = 4.dp)
                 ) {
-                    val hasFilters = uiState.filters.hasActiveFilters
-                    Box {
-                        Button(
-                            onClick = onOpenFilters,
-                            modifier = Modifier.size(32.dp),
-                            colors = ButtonDefaults.secondaryButtonColors(
-                                backgroundColor = if (hasFilters) BarqOrange else BarqCardBg
-                            )
-                        ) {
-                            Icon(
-                                imageVector = if (hasFilters) Icons.Default.Tune else Icons.Default.Search,
-                                contentDescription = stringResource(R.string.nearby_cd_filters),
-                                tint = Color.White,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                        if (hasFilters) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .size(13.dp)
-                                    .clip(CircleShape)
-                                    .background(BarqDarkBg)
-                                    .border(1.dp, BarqOrange, CircleShape),
-                                contentAlignment = Alignment.Center
+                    // Top row: Activities / Notifications Bell + My Account
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Activities / Notifications Bell
+                        val unreadActivities = uiState.currentUser?.unreadActivitiesCount ?: 0
+                        Box {
+                            Button(
+                                onClick = onOpenActivities,
+                                modifier = Modifier.size(32.dp),
+                                colors = ButtonDefaults.secondaryButtonColors(
+                                    backgroundColor = if (unreadActivities > 0) BarqOrange.copy(alpha = 0.25f) else BarqCardBg
+                                )
                             ) {
-                                Text(
-                                    text = "${uiState.filters.activeCount}",
-                                    color = BarqOrangeLight,
-                                    fontSize = 7.sp,
-                                    fontWeight = FontWeight.ExtraBold
+                                Icon(
+                                    imageVector = Icons.Default.Notifications,
+                                    contentDescription = stringResource(R.string.activities_title),
+                                    tint = if (unreadActivities > 0) BarqOrangeLight else Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                            if (unreadActivities > 0) {
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(13.dp)
+                                        .clip(CircleShape)
+                                        .background(BarqDarkBg)
+                                        .border(1.dp, BarqOrange, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (unreadActivities > 9) "9+" else "$unreadActivities",
+                                        color = BarqOrangeLight,
+                                        fontSize = 7.sp,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                            }
+                        }
+
+                        Button(
+                            onClick = onOpenMyAccount,
+                            modifier = Modifier.size(32.dp),
+                            colors = ButtonDefaults.secondaryButtonColors(backgroundColor = BarqCardBg)
+                        ) {
+                            val myAvatar = uiState.currentUser?.profile?.avatarUrl(size = 128)
+                            if (myAvatar != null) {
+                                AsyncImage(
+                                    model = myAvatar,
+                                    contentDescription = stringResource(R.string.nearby_cd_my_profile),
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = stringResource(R.string.nearby_cd_my_profile),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
                                 )
                             }
                         }
                     }
 
-                    Button(
-                        onClick = {
-                            locationPermissionLauncher.launch(
-                                arrayOf(
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    // Bottom row: Filters, GPS, Refresh
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val hasFilters = uiState.filters.hasActiveFilters
+                        Box {
+                            Button(
+                                onClick = onOpenFilters,
+                                modifier = Modifier.size(32.dp),
+                                colors = ButtonDefaults.secondaryButtonColors(
+                                    backgroundColor = if (hasFilters) BarqOrange else BarqCardBg
                                 )
-                            )
-                        },
-                        modifier = Modifier.size(32.dp),
-                        colors = ButtonDefaults.secondaryButtonColors(backgroundColor = BarqCardBg)
-                    ) {
-                        if (uiState.isUpdatingGps) {
-                            CircularProgressIndicator(
-                                indicatorColor = BarqOrange,
-                                strokeWidth = 2.dp,
-                                modifier = Modifier.size(14.dp)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.MyLocation,
-                                contentDescription = stringResource(R.string.nearby_cd_update_gps),
-                                tint = BarqSky,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    }
-
-                    Button(
-                        onClick = onRefresh,
-                        modifier = Modifier.size(32.dp),
-                        colors = ButtonDefaults.secondaryButtonColors(backgroundColor = BarqCardBg)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = stringResource(R.string.nearby_cd_refresh),
-                            tint = BarqOrangeLight,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-
-                    // Activities / Notifications Bell
-                    val unreadActivities = uiState.currentUser?.unreadActivitiesCount ?: 0
-                    Box {
-                        Button(
-                            onClick = onOpenActivities,
-                            modifier = Modifier.size(32.dp),
-                            colors = ButtonDefaults.secondaryButtonColors(
-                                backgroundColor = if (unreadActivities > 0) BarqOrange.copy(alpha = 0.25f) else BarqCardBg
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = stringResource(R.string.activities_title),
-                                tint = if (unreadActivities > 0) BarqOrangeLight else Color.White,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                        if (unreadActivities > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .size(13.dp)
-                                    .clip(CircleShape)
-                                    .background(BarqDarkBg)
-                                    .border(1.dp, BarqOrange, CircleShape),
-                                contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = if (unreadActivities > 9) "9+" else "$unreadActivities",
-                                    color = BarqOrangeLight,
-                                    fontSize = 7.sp,
-                                    fontWeight = FontWeight.ExtraBold
+                                Icon(
+                                    imageVector = if (hasFilters) Icons.Default.Tune else Icons.Default.Search,
+                                    contentDescription = stringResource(R.string.nearby_cd_filters),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                            if (hasFilters) {
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(13.dp)
+                                        .clip(CircleShape)
+                                        .background(BarqDarkBg)
+                                        .border(1.dp, BarqOrange, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "${uiState.filters.activeCount}",
+                                        color = BarqOrangeLight,
+                                        fontSize = 7.sp,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                            }
+                        }
+
+                        Button(
+                            onClick = {
+                                locationPermissionLauncher.launch(
+                                    arrayOf(
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                        Manifest.permission.ACCESS_COARSE_LOCATION
+                                    )
+                                )
+                            },
+                            modifier = Modifier.size(32.dp),
+                            colors = ButtonDefaults.secondaryButtonColors(backgroundColor = BarqCardBg)
+                        ) {
+                            if (uiState.isUpdatingGps) {
+                                CircularProgressIndicator(
+                                    indicatorColor = BarqOrange,
+                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.MyLocation,
+                                    contentDescription = stringResource(R.string.nearby_cd_update_gps),
+                                    tint = BarqSky,
+                                    modifier = Modifier.size(16.dp)
                                 )
                             }
                         }
-                    }
 
-                    Button(
-                        onClick = onOpenMyAccount,
-                        modifier = Modifier.size(32.dp),
-                        colors = ButtonDefaults.secondaryButtonColors(backgroundColor = BarqCardBg)
-                    ) {
-                        val myAvatar = uiState.currentUser?.profile?.avatarUrl(size = 128)
-                        if (myAvatar != null) {
-                            AsyncImage(
-                                model = myAvatar,
-                                contentDescription = stringResource(R.string.nearby_cd_my_profile),
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                            )
-                        } else {
+                        Button(
+                            onClick = onRefresh,
+                            modifier = Modifier.size(32.dp),
+                            colors = ButtonDefaults.secondaryButtonColors(backgroundColor = BarqCardBg)
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = stringResource(R.string.nearby_cd_my_profile),
-                                tint = Color.White,
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = stringResource(R.string.nearby_cd_refresh),
+                                tint = BarqOrangeLight,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -2293,6 +2307,7 @@ fun SettingsScreen(
     onToggleAdMode: (Boolean) -> Unit,
     onToggleNsfw: (Boolean) -> Unit,
     onSelectLanguage: (AppLanguage) -> Unit,
+    onSetGpsAutoSyncHours: (Int) -> Unit = {},
     onRefreshCacheSize: () -> Unit,
     onClearCache: () -> Unit,
     onOpenManualLocation: () -> Unit
@@ -2594,6 +2609,71 @@ fun SettingsScreen(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+                )
+            }
+
+            // Background GPS Auto-sync section
+            item {
+                val currentHours = uiState.gpsAutoSyncHours
+                val nextHours = when (currentHours) {
+                    0 -> 1
+                    1 -> 3
+                    3 -> 6
+                    else -> 0
+                }
+                val intervalLabel = when (currentHours) {
+                    0 -> stringResource(R.string.settings_auto_gps_disabled)
+                    1 -> stringResource(R.string.settings_auto_gps_1h)
+                    3 -> stringResource(R.string.settings_auto_gps_3h)
+                    else -> stringResource(R.string.settings_auto_gps_6h)
+                }
+                val isEnabled = currentHours > 0
+
+                Chip(
+                    onClick = {
+                        onSetGpsAutoSyncHours(nextHours)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    colors = ChipDefaults.secondaryChipColors(
+                        backgroundColor = if (isEnabled) BarqOrange.copy(alpha = 0.25f) else BarqCardBg
+                    ),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.MyLocation,
+                            contentDescription = null,
+                            tint = if (isEnabled) BarqOrangeLight else BarqSky,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.settings_auto_gps_title),
+                            color = BarqTextPrimary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    secondaryLabel = {
+                        Text(
+                            text = intervalLabel,
+                            color = if (isEnabled) BarqOrangeLight else BarqTextSecondary,
+                            fontSize = 10.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+            }
+
+            item {
+                Text(
+                    text = stringResource(R.string.settings_auto_gps_battery_hint),
+                    color = BarqTextSecondary,
+                    fontSize = 8.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
         }

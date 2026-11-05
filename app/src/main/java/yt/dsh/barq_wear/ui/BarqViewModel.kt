@@ -9,6 +9,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import yt.dsh.barq_wear.R
+import yt.dsh.barq_wear.assistant.BarqDestinationRequest
+import yt.dsh.barq_wear.assistant.BarqNavDestination
 import yt.dsh.barq_wear.data.ActivityItem
 import yt.dsh.barq_wear.data.BarqApiClient
 import yt.dsh.barq_wear.data.BarqAuthManager
@@ -65,6 +67,7 @@ data class BarqUiState(
     val gpsStatusMessage: String? = null,
     val isUpdatingGps: Boolean = false,
     val gpsUnavailable: Boolean = false,
+    val gpsAutoSyncHours: Int = 0,
 
     val placeSearchQuery: String = "",
     val placeSearchResults: List<Place> = emptyList(),
@@ -79,6 +82,7 @@ data class BarqUiState(
     val profileDetailError: String? = null,
     val isLikingProfile: Boolean = false,
     val pendingTileProfileUuid: String? = null,
+    val pendingDestination: BarqDestinationRequest? = null,
 
     val selectedSona: Sona? = null,
 
@@ -146,6 +150,7 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
             isAdMode = authManager.isAdModeEnabled(),
             showNsfw = authManager.isNsfwEnabled(),
             needsAdNsfwOnboarding = authManager.isLoggedIn() && !authManager.hasAskedAdNsfwOnboarding(),
+            gpsAutoSyncHours = authManager.getGpsAutoSyncHours(),
             boopBalance = authManager.getLastKnownBoopBalance(),
             profiles = authManager.getCachedNearbyProfiles().orEmpty()
         )
@@ -169,7 +174,23 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
     fun requestOpenProfileFromTile(uuid: String) {
         if (uuid.isBlank()) return
         loadProfileDetail(uuid)
-        _uiState.update { it.copy(pendingTileProfileUuid = uuid) }
+        _uiState.update { 
+            it.copy(
+                pendingTileProfileUuid = uuid,
+                pendingDestination = BarqDestinationRequest(BarqNavDestination.PROFILE, profileUuid = uuid)
+            ) 
+        }
+    }
+
+    fun requestDestination(request: BarqDestinationRequest) {
+        if (request.destination == BarqNavDestination.PROFILE && !request.profileUuid.isNullOrBlank()) {
+            loadProfileDetail(request.profileUuid)
+        }
+        _uiState.update { it.copy(pendingDestination = request) }
+    }
+
+    fun consumePendingDestination() {
+        _uiState.update { it.copy(pendingDestination = null, pendingTileProfileUuid = null) }
     }
 
     fun consumePendingTileProfileUuid() {
@@ -492,6 +513,15 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
     fun setShowNsfw(enabled: Boolean) {
         authManager.setNsfwEnabled(enabled)
         _uiState.update { it.copy(showNsfw = enabled) }
+    }
+
+    fun setGpsAutoSyncHours(hours: Int, context: Context) {
+        authManager.setGpsAutoSyncHours(hours)
+        _uiState.update { it.copy(gpsAutoSyncHours = hours) }
+        if (hours > 0) {
+            updateGpsLocationFromWatch(context)
+            yt.dsh.barq_wear.sync.BarqSyncScheduler.triggerImmediateSync(context)
+        }
     }
 
     fun clearSearchFilters() {

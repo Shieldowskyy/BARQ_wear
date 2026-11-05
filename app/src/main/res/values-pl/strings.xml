@@ -175,6 +175,12 @@
     <string name="settings_refresh_size">Odśwież rozmiar</string>
     <string name="settings_saved_city">Zapisane miasto</string>
     <string name="settings_no_saved_city">Brak wybranego</string>
+    <string name="settings_auto_gps_title">GPS w tle (Auto-miasto)</string>
+    <string name="settings_auto_gps_disabled">Wyłączona</string>
+    <string name="settings_auto_gps_1h">Co 1 godzinę</string>
+    <string name="settings_auto_gps_3h">Co 3 godziny</string>
+    <string name="settings_auto_gps_6h">Co 6 godzin</string>
+    <string name="settings_auto_gps_battery_hint">Oszczędzanie energii: odświeża miasto w tle z sieci/telefonu bez wybudzania modułu GPS zegarka.</string>
 
     <!-- First-Time After Dark & NSFW Prompt -->
     <string name="onboarding_ad_title">After Dark i NSFW</string>
@@ -277,5 +283,25 @@
     <string name="notification_action_boop_back">🐾 Odpowiedz boopem!</string>
     <string name="boop_back_success_fmt">Oddano boopa %1$s! 🐾 (Zostało: %2$d)</string>
     <string name="boop_back_title">🐾 Oddano boopa!</string>
+
+    <!-- Shortcuts & Gemini / Google Assistant App Actions -->
+    <string name="shortcut_nearby_short">W pobliżu</string>
+    <string name="shortcut_nearby_long">BARQ! Osoby w pobliżu</string>
+    <string name="shortcut_profile_short">Mój profil</string>
+    <string name="shortcut_profile_long">Otwórz mój profil BARQ!</string>
+    <string name="shortcut_account_short">Konto</string>
+    <string name="shortcut_account_long">BARQ! Moje konto</string>
+    <string name="shortcut_activities_short">Aktywności</string>
+    <string name="shortcut_activities_long">BARQ! Aktywności i boopy</string>
+    <string name="shortcut_news_short">Aktualności</string>
+    <string name="shortcut_news_long">BARQ! Wiadomości i nowości</string>
+    <string name="shortcut_relations_short">Relacje</string>
+    <string name="shortcut_relations_long">BARQ! Relacje i znajomi</string>
+    <string name="shortcut_filters_short">Filtry</string>
+    <string name="shortcut_filters_long">BARQ! Filtry i szukaj</string>
+    <string name="shortcut_location_short">Lokalizacja</string>
+    <string name="shortcut_location_long">BARQ! Zmień lokalizację</string>
+    <string name="shortcut_settings_short">Ustawienia</string>
+    <string name="shortcut_settings_long">BARQ! Ustawienia</string>
 </resources>
 

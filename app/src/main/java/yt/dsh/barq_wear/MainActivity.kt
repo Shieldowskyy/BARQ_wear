@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
+import yt.dsh.barq_wear.assistant.BarqNavDestination
+import yt.dsh.barq_wear.assistant.BarqShortcutManager
 import yt.dsh.barq_wear.data.BarqAuthManager
 import yt.dsh.barq_wear.ui.ActivitiesScreen
 import yt.dsh.barq_wear.ui.AdNsfwOnboardingScreen
@@ -88,6 +90,9 @@ class MainActivity : ComponentActivity() {
                 .build()
         )
 
+        // Publish dynamic shortcuts for Gemini and Google Assistant
+        BarqShortcutManager.publishShortcuts(this)
+
         handleDeepLinkIntent(intent)
 
         // Schedule periodic WorkManager background sync for Nearby furs, Tiles, and Complications
@@ -102,26 +107,36 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         handleDeepLinkIntent(intent)
     }
 
     private fun handleDeepLinkIntent(intent: Intent?) {
-        val tileUuid = intent?.getStringExtra("tile_profile_uuid")
-        if (!tileUuid.isNullOrBlank()) {
-            viewModel.requestOpenProfileFromTile(tileUuid)
-            return
-        }
-        val data = intent?.data ?: return
-        if (data.scheme == "barq") {
+        val data = intent?.data
+        if (data != null && (data.scheme == "barq" || data.host == "barq.app")) {
             val accessToken = data.getQueryParameter("access_token")
                 ?: data.getQueryParameter("token")
             val refreshToken = data.getQueryParameter("refresh_token")
             if (!accessToken.isNullOrBlank()) {
                 viewModel.authManager.saveTokens(accessToken, refreshToken)
                 viewModel.loadInitialData()
+                return
             } else if (!refreshToken.isNullOrBlank()) {
                 viewModel.loginWithManualToken(refreshToken)
+                return
             }
+        }
+
+        // Assistant / Gemini Voice Command or App Deeplink destination
+        val destinationRequest = BarqShortcutManager.parseDestination(intent)
+        if (destinationRequest != null) {
+            viewModel.requestDestination(destinationRequest)
+            return
+        }
+
+        val tileUuid = intent?.getStringExtra("tile_profile_uuid")
+        if (!tileUuid.isNullOrBlank()) {
+            viewModel.requestOpenProfileFromTile(tileUuid)
         }
     }
 }
@@ -161,6 +176,54 @@ fun BarqWearApp(viewModel: BarqViewModel) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
+
+        // Handle navigation requested via Gemini / Google Assistant voice commands, Deeplinks or Tiles
+        LaunchedEffect(uiState.pendingDestination) {
+            val request = uiState.pendingDestination ?: return@LaunchedEffect
+            viewModel.consumePendingDestination()
+
+            when (request.destination) {
+                BarqNavDestination.NEARBY -> {
+                    navController.popBackStack("nearby", inclusive = false)
+                }
+                BarqNavDestination.PROFILE -> {
+                    val targetUuid = request.profileUuid
+                    if (!targetUuid.isNullOrBlank()) {
+                        viewModel.loadProfileDetail(targetUuid)
+                        navController.navigate("profile/$targetUuid")
+                    } else {
+                        viewModel.openMyOwnProfile { myUuid ->
+                            navController.navigate("profile/$myUuid")
+                        }
+                    }
+                }
+                BarqNavDestination.ACCOUNT -> {
+                    navController.navigate("account")
+                }
+                BarqNavDestination.ACTIVITIES -> {
+                    viewModel.loadActivities()
+                    navController.navigate("activities")
+                }
+                BarqNavDestination.NEWS -> {
+                    viewModel.loadNewsItems()
+                    navController.navigate("news")
+                }
+                BarqNavDestination.RELATIONS -> {
+                    viewModel.loadRelationProfiles(uiState.relationListType)
+                    navController.navigate("relations")
+                }
+                BarqNavDestination.FILTERS -> {
+                    navController.navigate("filters")
+                }
+                BarqNavDestination.LOCATION -> {
+                    navController.navigate("location")
+                }
+                BarqNavDestination.SETTINGS -> {
+                    viewModel.refreshImageCacheSize()
+                    navController.navigate("settings")
                 }
             }
         }
@@ -347,6 +410,9 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                     },
                     onSelectLanguage = { lang ->
                         viewModel.setAppLanguage(lang)
+                    },
+                    onSetGpsAutoSyncHours = { hours ->
+                        viewModel.setGpsAutoSyncHours(hours, context)
                     },
                     onRefreshCacheSize = {
                         viewModel.refreshImageCacheSize()

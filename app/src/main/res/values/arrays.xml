@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="feature_nearby_synonyms">
+        <item>nearby</item>
+        <item>w pobliżu</item>
+        <item>blisko</item>
+        <item>furs nearby</item>
+        <item>ludzie w pobliżu</item>
+        <item>osoby w pobliżu</item>
+        <item>map</item>
+        <item>mapa</item>
+    </string-array>
+
+    <string-array name="feature_profile_synonyms">
+        <item>profile</item>
+        <item>my profile</item>
+        <item>profil</item>
+        <item>mój profil</item>
+        <item>pokaż profil</item>
+        <item>odpal profil</item>
+    </string-array>
+
+    <string-array name="feature_account_synonyms">
+        <item>account</item>
+        <item>my account</item>
+        <item>konto</item>
+        <item>moje konto</item>
+    </string-array>
+
+    <string-array name="feature_activities_synonyms">
+        <item>activities</item>
+        <item>activity</item>
+        <item>notifications</item>
+        <item>boops</item>
+        <item>aktywności</item>
+        <item>aktywność</item>
+        <item>powiadomienia</item>
+        <item>boopy</item>
+    </string-array>
+
+    <string-array name="feature_news_synonyms">
+        <item>news</item>
+        <item>announcements</item>
+        <item>aktualności</item>
+        <item>nowości</item>
+        <item>wiadomości</item>
+    </string-array>
+
+    <string-array name="feature_relations_synonyms">
+        <item>relations</item>
+        <item>friends</item>
+        <item>mutuals</item>
+        <item>likes</item>
+        <item>relacje</item>
+        <item>znajomi</item>
+        <item>polubienia</item>
+    </string-array>
+
+    <string-array name="feature_filters_synonyms">
+        <item>filters</item>
+        <item>search</item>
+        <item>filtry</item>
+        <item>szukaj</item>
+        <item>wyszukiwanie</item>
+    </string-array>
+
+    <string-array name="feature_location_synonyms">
+        <item>location</item>
+        <item>city</item>
+        <item>gps</item>
+        <item>lokalizacja</item>
+        <item>miasto</item>
+        <item>zmień miasto</item>
+    </string-array>
+
+    <string-array name="feature_settings_synonyms">
+        <item>settings</item>
+        <item>preferences</item>
+        <item>options</item>
+        <item>ustawienia</item>
+        <item>opcje</item>
+    </string-array>
+</resources>
+
