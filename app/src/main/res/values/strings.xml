@@ -232,6 +232,16 @@
     <string name="relation_btn_friend">Friend ⭐</string>
     <string name="relation_btn_like">Like profile 🐾</string>
 
+    <!-- Destructive Relation Dialogs -->
+    <string name="unfriend_dialog_title">Remove friend?</string>
+    <string name="unfriend_dialog_msg">Are you sure you want to remove %1$s from friends? They will need to accept a new request.</string>
+    <string name="unmatch_dialog_title">Undo match?</string>
+    <string name="unmatch_dialog_msg">Are you sure you want to remove mutual match with %1$s?</string>
+    <string name="unlike_dialog_title">Undo like?</string>
+    <string name="unlike_dialog_msg">Are you sure you want to unlike %1$s?</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_cancel">Cancel</string>
+
     <string name="sona_unknown_species">Unknown species</string>
     <string name="sona_fursuit_badge">🐾 Fursuit</string>
     <string name="sona_has_fursuit">🐾 Has a Fursuit</string>

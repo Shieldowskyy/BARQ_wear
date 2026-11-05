@@ -19,7 +19,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -28,7 +30,13 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,17 +53,22 @@ import androidx.compose.ui.unit.sp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.CompactChip
 import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
+import androidx.wear.compose.material.dialog.Alert
+import androidx.wear.compose.material.dialog.Dialog
 import yt.dsh.barq_wear.R
 import yt.dsh.barq_wear.data.ProfileDetail
 import yt.dsh.barq_wear.data.ProfileImageItem
@@ -75,6 +88,7 @@ fun ProfileDetailScreen(
     val listState = rememberScalingLazyListState()
     val detail: ProfileDetail? = uiState.selectedProfile
     val isMyOwnProfile = detail != null && detail.uuid == uiState.currentUser?.profile?.uuid
+    var showDestructiveConfirmation by remember { mutableStateOf(false) }
 
     Scaffold(
         timeText = { TimeText() },
@@ -158,21 +172,31 @@ fun ProfileDetailScreen(
             // Like / Boop Button (if not own profile)
             if (!isMyOwnProfile) {
                 item {
-                    val isLiked = detail.isLikedOrMutual
                     val btnColor = when (detail.relationType) {
+                        "friend" -> Color(0xFF4F46E5)
                         "mutual" -> BarqPink
                         "liked" -> Color(0xFF3F3F4E)
                         "likedBy" -> BarqOrange
                         else -> BarqOrange
                     }
                     Chip(
-                        onClick = onToggleLikeProfile,
+                        onClick = {
+                            if (detail.isDestructiveRelationAction) {
+                                showDestructiveConfirmation = true
+                            } else {
+                                onToggleLikeProfile()
+                            }
+                        },
                         enabled = !uiState.isLikingProfile,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ChipDefaults.primaryChipColors(backgroundColor = btnColor),
                         icon = {
                             Icon(
-                                imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.Pets,
+                                imageVector = when (detail.relationType) {
+                                    "friend" -> Icons.Default.Star
+                                    "mutual", "liked" -> Icons.Default.Favorite
+                                    else -> Icons.Default.Pets
+                                },
                                 contentDescription = null,
                                 tint = Color.White
                             )
@@ -659,6 +683,76 @@ fun ProfileDetailScreen(
                         )
                     }
                 }
+            }
+        }
+
+        if (!isMyOwnProfile && detail.isDestructiveRelationAction) {
+            val dialogTitle = when (detail.relationType) {
+                "friend" -> stringResource(R.string.unfriend_dialog_title)
+                "mutual" -> stringResource(R.string.unmatch_dialog_title)
+                else -> stringResource(R.string.unlike_dialog_title)
+            }
+            val dialogMsg = when (detail.relationType) {
+                "friend" -> stringResource(R.string.unfriend_dialog_msg, detail.displayName)
+                "mutual" -> stringResource(R.string.unmatch_dialog_msg, detail.displayName)
+                else -> stringResource(R.string.unlike_dialog_msg, detail.displayName)
+            }
+
+            Dialog(
+                showDialog = showDestructiveConfirmation,
+                onDismissRequest = { showDestructiveConfirmation = false }
+            ) {
+                Alert(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = BarqOrange,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = {
+                        Text(
+                            text = dialogTitle,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.title3,
+                            color = Color.White
+                        )
+                    },
+                    negativeButton = {
+                        Button(
+                            onClick = { showDestructiveConfirmation = false },
+                            colors = ButtonDefaults.secondaryButtonColors()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.dialog_cancel)
+                            )
+                        }
+                    },
+                    positiveButton = {
+                        Button(
+                            onClick = {
+                                showDestructiveConfirmation = false
+                                onToggleLikeProfile()
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFDC2626))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(R.string.dialog_confirm)
+                            )
+                        }
+                    },
+                    content = {
+                        Text(
+                            text = dialogMsg,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.body2,
+                            color = Color(0xFFD1D5DB)
+                        )
+                    }
+                )
             }
         }
     }

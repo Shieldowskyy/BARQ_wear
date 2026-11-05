@@ -226,6 +226,16 @@
     <string name="relation_btn_friend">Znajomy ⭐</string>
     <string name="relation_btn_like">Polub profil 🐾</string>
 
+    <!-- Destructive Relation Dialogs -->
+    <string name="unfriend_dialog_title">Usunąć ze znajomych?</string>
+    <string name="unfriend_dialog_msg">Czy na pewno chcesz usunąć %1$s ze znajomych? Aby odnowić znajomość, konieczne będzie ponowne zatwierdzenie.</string>
+    <string name="unmatch_dialog_title">Cofnąć dopasowanie?</string>
+    <string name="unmatch_dialog_msg">Czy na pewno chcesz cofnąć wzajemne polubienie z %1$s?</string>
+    <string name="unlike_dialog_title">Cofnąć polubienie?</string>
+    <string name="unlike_dialog_msg">Czy na pewno chcesz cofnąć polubienie profilu %1$s?</string>
+    <string name="dialog_confirm">Zatwierdź</string>
+    <string name="dialog_cancel">Anuluj</string>
+
     <string name="sona_unknown_species">Nieznany gatunek</string>
     <string name="sona_fursuit_badge">🐾 Fursuit</string>
     <string name="sona_has_fursuit">🐾 Posiada Fursuit</string>

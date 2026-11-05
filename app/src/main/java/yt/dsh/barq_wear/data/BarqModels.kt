@@ -169,7 +169,10 @@ data class OverviewProfile(
     }
 
     val isLikedOrMutual: Boolean
-        get() = relationType == "liked" || relationType == "mutual"
+        get() = relationType == "liked" || relationType == "mutual" || relationType == "friend"
+
+    val isDestructiveRelationAction: Boolean
+        get() = relationType in listOf("friend", "mutual", "liked")
 
     fun relationBadgeLabel(): String? = when (relationType) {
         "mutual" -> "Dopasowanie (Mutual)"
@@ -343,7 +346,10 @@ data class ProfileDetail(
     }
 
     val isLikedOrMutual: Boolean
-        get() = relationType == "liked" || relationType == "mutual"
+        get() = relationType == "liked" || relationType == "mutual" || relationType == "friend"
+
+    val isDestructiveRelationAction: Boolean
+        get() = relationType in listOf("friend", "mutual", "liked")
 
     @StringRes
     fun relationButtonTextRes(): Int = when (relationType) {
