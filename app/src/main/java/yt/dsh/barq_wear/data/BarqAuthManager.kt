@@ -1,10 +1,13 @@
 package yt.dsh.barq_wear.data
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.util.Base64
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
@@ -90,7 +93,8 @@ class BarqAuthManager(private val context: Context) {
         const val USER_AGENT =
             "Mozilla/5.0 (Linux; Android 14; Pixel Watch 2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36"
 
-        private const val PREFS_NAME = "barq_wear_auth"
+        private const val PREFS_NAME = "barq_wear_auth_secure"
+        private const val OLD_PREFS_NAME = "barq_wear_auth"
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
         private const val KEY_EXPIRES_AT = "expires_at"
@@ -106,7 +110,45 @@ class BarqAuthManager(private val context: Context) {
         private const val KEY_LAST_GPS_SYNC_TS = "last_gps_sync_timestamp"
     }
 
-    private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences = run {
+        val appContext = context.applicationContext
+        try {
+            val masterKey = MasterKey.Builder(appContext)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            val securePrefs = EncryptedSharedPreferences.create(
+                appContext,
+                PREFS_NAME,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+            // 1-time automatic silent migration from legacy unencrypted SharedPreferences
+            val oldPrefs = appContext.getSharedPreferences(OLD_PREFS_NAME, Context.MODE_PRIVATE)
+            val oldTokens = oldPrefs.all
+            if (oldTokens.isNotEmpty()) {
+                val editor = securePrefs.edit()
+                for ((key, value) in oldTokens) {
+                    when (value) {
+                        is String -> editor.putString(key, value)
+                        is Boolean -> editor.putBoolean(key, value)
+                        is Int -> editor.putInt(key, value)
+                        is Long -> editor.putLong(key, value)
+                        is Float -> editor.putFloat(key, value)
+                    }
+                }
+                editor.apply()
+                oldPrefs.edit().clear().apply()
+            }
+
+            securePrefs
+        } catch (e: Exception) {
+            // Graceful fallback to private SharedPreferences if hardware Keystore is unavailable
+            appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        }
+    }
     private val gson = Gson()
     private val refreshMutex = Mutex()
     private val cookieJar = MemoryCookieJar()

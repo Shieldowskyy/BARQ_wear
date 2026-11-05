@@ -115,5 +115,8 @@ dependencies {
     // WorkManager & Complications
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.wear.watchface.complications.data.source.ktx)
+
+    // Hardware Keystore & Encrypted Preferences
+    implementation(libs.androidx.security.crypto)
 }
 
