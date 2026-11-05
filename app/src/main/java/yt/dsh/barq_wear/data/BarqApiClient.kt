@@ -504,6 +504,8 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(20, TimeUnit.SECONDS)
+        .followRedirects(false)
+        .followSslRedirects(false)
         .build()
 
     private suspend fun executeGraphQl(

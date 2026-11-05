@@ -23,7 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="false">
 
         <uses-library
             android:name="com.google.android.wearable"

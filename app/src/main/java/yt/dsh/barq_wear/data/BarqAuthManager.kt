@@ -355,7 +355,7 @@ class BarqAuthManager(private val context: Context) {
                 .header("Accept", "application/json")
                 .build()
 
-            httpClient.newCall(request).execute().use { response ->
+            noRedirectClient.newCall(request).execute().use { response ->
                 val bodyStr = response.body?.string().orEmpty()
                 if (!response.isSuccessful) return null
                 val json = JsonParser.parseString(bodyStr).asJsonObject
