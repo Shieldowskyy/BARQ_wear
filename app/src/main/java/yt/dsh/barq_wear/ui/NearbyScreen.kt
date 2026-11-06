@@ -503,8 +503,9 @@ private fun ProfileListCard(
 ) {
     val roleBadge = profile.roleBadge()
     val borderColor = when {
-        profile.relationType == "mutual" -> BarqPink
+        profile.relationType == "friend" -> BarqPink
         profile.relationType == "likedBy" -> BarqOrange
+        profile.relationType == "mutual" -> BarqSky
         roleBadge == "TEAM" -> BarqSky
         roleBadge == "VIP" || roleBadge == "SUPPORTER" -> BarqGold
         else -> BarqCardBorder
@@ -612,7 +613,7 @@ private fun ProfileListCard(
 
         // Relation icon on the right
         when (profile.relationType) {
-            "mutual" -> Icon(
+            "friend" -> Icon(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "Mutual",
                 tint = BarqPink,
@@ -630,7 +631,7 @@ private fun ProfileListCard(
                 tint = BarqGold,
                 modifier = Modifier.size(16.dp)
             )
-            "friend" -> Icon(
+            "mutual" -> Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = "Friend",
                 tint = BarqSky,

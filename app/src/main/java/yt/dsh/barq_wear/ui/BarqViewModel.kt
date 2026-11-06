@@ -900,22 +900,32 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                 latitude = place?.latitude,
                 longitude = place?.longitude
             ).onSuccess { fetched ->
-                val merged = if (type == RelationListType.LIKES) {
-                    val fromCached = state.profiles.filter {
-                        it.relationType == "likedBy" || it.relationType == "liked"
+                val merged = when (type) {
+                    RelationListType.LIKES -> {
+                        val fromCached = state.profiles.filter {
+                            it.relationType == "likedBy" || it.relationType == "liked"
+                        }
+                        val seen = fetched.map { it.uuid }.toSet()
+                        (fetched + fromCached.filterNot { it.uuid in seen }).sortedWith(
+                            compareBy<OverviewProfile> {
+                                when (it.relationType) {
+                                    "likedBy" -> 0
+                                    "liked" -> 1
+                                    else -> 2
+                                }
+                            }.thenBy { it.distanceKmForSort }
+                        )
                     }
-                    val seen = fetched.map { it.uuid }.toSet()
-                    (fetched + fromCached.filterNot { it.uuid in seen }).sortedWith(
-                        compareBy<OverviewProfile> {
-                            when (it.relationType) {
-                                "likedBy" -> 0
-                                "liked" -> 1
-                                else -> 2
-                            }
-                        }.thenBy { it.distanceKmForSort }
-                    )
-                } else {
-                    fetched
+                    RelationListType.MUTUALS -> {
+                        val fromCached = state.profiles.filter { it.relationType == "friend" }
+                        val seen = fetched.map { it.uuid }.toSet()
+                        (fetched + fromCached.filterNot { it.uuid in seen }).sortedBy { it.distanceKmForSort }
+                    }
+                    RelationListType.FRIENDS -> {
+                        val fromCached = state.profiles.filter { it.relationType == "mutual" }
+                        val seen = fetched.map { it.uuid }.toSet()
+                        (fetched + fromCached.filterNot { it.uuid in seen }).sortedBy { it.distanceKmForSort }
+                    }
                 }
                 _uiState.update {
                     it.copy(

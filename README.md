@@ -84,7 +84,7 @@ Pre-built, ready-to-install APKs are available on the **[GitHub Releases](https:
 1. Download the latest `BARQ_wear-vX.Y.Z-universal-release.apk` from [Releases](https://github.com/Shieldowskyy/BARQ_wear/releases/latest).
 2. Install it onto your watch via ADB or your favorite Wear OS installer app (such as [Bugjaeger](https://play.google.com/store/apps/details?id=eu.sisik.hackendebug) or GeminiMan Wear OS Manager):
    ```bash
-   adb install -r BARQ_wear-v1.0.0-universal-release.apk
+   adb install -r BARQ_wear-v1.0.1-universal-release.apk
    ```
 
 ---
@@ -124,8 +124,8 @@ Pre-built, ready-to-install APKs are available on the **[GitHub Releases](https:
    ./gradlew assembleRelease
    ```
    The compiled APK will be generated with full version and architecture info, e.g.:
-   `app/build/outputs/apk/debug/BARQ_wear-v1.0.0-universal-debug.apk`
-   `app/build/outputs/apk/release/BARQ_wear-v1.0.0-universal-release.apk`
+   `app/build/outputs/apk/debug/BARQ_wear-v1.0.1-universal-debug.apk`
+   `app/build/outputs/apk/release/BARQ_wear-v1.0.1-universal-release.apk`
 
 3. **Install on a connected Wear OS device or emulator**:
    ```bash

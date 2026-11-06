@@ -105,8 +105,8 @@ object BarqFilterOptions {
     )
 
     val RELATION_TYPES = listOf(
-        FilterOption("mutual", R.string.rel_type_mutual, "Mutuals ❤️"),
-        FilterOption("friend", R.string.rel_type_friend, "Friends ⭐"),
+        FilterOption("friend", R.string.rel_type_mutual, "Mutuals ❤️"),
+        FilterOption("mutual", R.string.rel_type_friend, "Friends ⭐"),
         FilterOption("likedBy", R.string.rel_type_liked_by, "Liked you ✨"),
         FilterOption("liked", R.string.rel_type_liked, "Liked by me 🐾")
     )
@@ -175,10 +175,10 @@ data class OverviewProfile(
         get() = relationType in listOf("friend", "mutual", "liked")
 
     fun relationBadgeLabel(): String? = when (relationType) {
-        "mutual" -> "Dopasowanie (Mutual)"
+        "friend" -> "Dopasowanie (Mutual)"
         "liked" -> "Polubiono"
         "likedBy" -> "Lubi Cię! (Odaj lajka)"
-        "friend" -> "Znajomy"
+        "mutual" -> "Znajomy"
         else -> null
     }
 
@@ -400,10 +400,10 @@ data class ProfileDetail(
 
     @StringRes
     fun relationButtonTextRes(): Int = when (relationType) {
-        "mutual" -> R.string.relation_btn_mutual
+        "friend" -> R.string.relation_btn_mutual
         "liked" -> R.string.relation_btn_liked
         "likedBy" -> R.string.relation_btn_liked_by
-        "friend" -> R.string.relation_btn_friend
+        "mutual" -> R.string.relation_btn_friend
         else -> R.string.relation_btn_like
     }
 }

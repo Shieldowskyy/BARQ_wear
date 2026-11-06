@@ -173,8 +173,8 @@ fun ProfileDetailScreen(
             if (!isMyOwnProfile) {
                 item {
                     val btnColor = when (detail.relationType) {
-                        "friend" -> Color(0xFF4F46E5)
-                        "mutual" -> BarqPink
+                        "mutual" -> Color(0xFF4F46E5)
+                        "friend" -> BarqPink
                         "liked" -> Color(0xFF3F3F4E)
                         "likedBy" -> BarqOrange
                         else -> BarqOrange
@@ -193,8 +193,8 @@ fun ProfileDetailScreen(
                         icon = {
                             Icon(
                                 imageVector = when (detail.relationType) {
-                                    "friend" -> Icons.Default.Star
-                                    "mutual", "liked" -> Icons.Default.Favorite
+                                    "mutual" -> Icons.Default.Star
+                                    "friend", "liked" -> Icons.Default.Favorite
                                     else -> Icons.Default.Pets
                                 },
                                 contentDescription = null,
@@ -690,13 +690,13 @@ fun ProfileDetailScreen(
 
         if (!isMyOwnProfile && detail.isDestructiveRelationAction) {
             val dialogTitle = when (detail.relationType) {
-                "friend" -> stringResource(R.string.unfriend_dialog_title)
-                "mutual" -> stringResource(R.string.unmatch_dialog_title)
+                "mutual" -> stringResource(R.string.unfriend_dialog_title)
+                "friend" -> stringResource(R.string.unmatch_dialog_title)
                 else -> stringResource(R.string.unlike_dialog_title)
             }
             val dialogMsg = when (detail.relationType) {
-                "friend" -> stringResource(R.string.unfriend_dialog_msg, detail.displayName)
-                "mutual" -> stringResource(R.string.unmatch_dialog_msg, detail.displayName)
+                "mutual" -> stringResource(R.string.unfriend_dialog_msg, detail.displayName)
+                "friend" -> stringResource(R.string.unmatch_dialog_msg, detail.displayName)
                 else -> stringResource(R.string.unlike_dialog_msg, detail.displayName)
             }
 

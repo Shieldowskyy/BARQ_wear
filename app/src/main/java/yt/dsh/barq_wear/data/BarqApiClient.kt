@@ -702,8 +702,7 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
                 val filtered = if (searchFilters.relationTypes.isNotEmpty()) {
                     parsed.filter { p ->
                         val rel = p.relationType
-                        rel in searchFilters.relationTypes ||
-                            ("mutual" in searchFilters.relationTypes && rel == "friend")
+                        rel in searchFilters.relationTypes
                     }
                 } else {
                     parsed
@@ -728,8 +727,8 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
             )
         }
         when (relationListType) {
-            RelationListType.MUTUALS -> filters["relationTypes"] = listOf("mutual")
-            RelationListType.FRIENDS -> filters["relationTypes"] = listOf("friend")
+            RelationListType.MUTUALS -> filters["relationTypes"] = listOf("friend")
+            RelationListType.FRIENDS -> filters["relationTypes"] = listOf("mutual")
             RelationListType.LIKES -> {
                 // Fetch nearby/recent profiles and filter to likedBy / liked / mutual
             }
@@ -750,10 +749,10 @@ class BarqApiClient(private val authManager: BarqAuthManager) {
             }
             when (relationListType) {
                 RelationListType.MUTUALS -> parsed
-                    .filter { it.relationType == "mutual" || it.relationType == "friend" }
+                    .filter { it.relationType == "friend" }
                     .sortedBy { it.distanceKmForSort }
                 RelationListType.FRIENDS -> parsed
-                    .filter { it.relationType == "friend" }
+                    .filter { it.relationType == "mutual" }
                     .sortedBy { it.distanceKmForSort }
                 RelationListType.LIKES -> parsed
                     .filter { it.relationType == "likedBy" || it.relationType == "liked" }
