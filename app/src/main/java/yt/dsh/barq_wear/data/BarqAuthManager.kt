@@ -108,6 +108,8 @@ class BarqAuthManager(private val context: Context) {
         private const val KEY_NSFW_ENABLED = "nsfw_enabled"
         private const val KEY_GPS_AUTO_SYNC_HOURS = "gps_auto_sync_hours"
         private const val KEY_LAST_GPS_SYNC_TS = "last_gps_sync_timestamp"
+        private const val KEY_CACHED_RELATION_PREFIX = "cached_relation_profiles_"
+        private const val KEY_CACHED_RELATION_TS_PREFIX = "cached_relation_ts_"
     }
 
     private val prefs: SharedPreferences = run {
@@ -286,6 +288,36 @@ class BarqAuthManager(private val context: Context) {
 
     fun getAnyCachedNearbyProfiles(): List<OverviewProfile> {
         val raw = prefs.getString(KEY_CACHED_NEARBY_JSON, null) ?: return emptyList()
+        return runCatching {
+            val listType = object : TypeToken<List<OverviewProfile>>() {}.type
+            gson.fromJson<List<OverviewProfile>>(raw, listType)
+        }.getOrNull().orEmpty()
+    }
+
+    fun saveCachedRelationProfiles(type: RelationListType, profiles: List<OverviewProfile>) {
+        val keyJson = "${KEY_CACHED_RELATION_PREFIX}${type.name}"
+        val keyTs = "${KEY_CACHED_RELATION_TS_PREFIX}${type.name}"
+        prefs.edit()
+            .putString(keyJson, gson.toJson(profiles))
+            .putLong(keyTs, System.currentTimeMillis())
+            .apply()
+    }
+
+    fun getCachedRelationProfiles(type: RelationListType, maxAgeMs: Long = 30L * 60L * 1000L): List<OverviewProfile>? {
+        val keyTs = "${KEY_CACHED_RELATION_TS_PREFIX}${type.name}"
+        val ts = prefs.getLong(keyTs, 0L)
+        if (ts <= 0L || System.currentTimeMillis() - ts > maxAgeMs) return null
+        val keyJson = "${KEY_CACHED_RELATION_PREFIX}${type.name}"
+        val raw = prefs.getString(keyJson, null) ?: return null
+        return runCatching {
+            val listType = object : TypeToken<List<OverviewProfile>>() {}.type
+            gson.fromJson<List<OverviewProfile>>(raw, listType)
+        }.getOrNull()?.takeIf { it.isNotEmpty() }
+    }
+
+    fun getAnyCachedRelationProfiles(type: RelationListType): List<OverviewProfile> {
+        val keyJson = "${KEY_CACHED_RELATION_PREFIX}${type.name}"
+        val raw = prefs.getString(keyJson, null) ?: return emptyList()
         return runCatching {
             val listType = object : TypeToken<List<OverviewProfile>>() {}.type
             gson.fromJson<List<OverviewProfile>>(raw, listType)

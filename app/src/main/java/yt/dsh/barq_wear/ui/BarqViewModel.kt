@@ -131,14 +131,22 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         val timestamp: Long
     )
 
+    private data class CachedRelationProfilesEntry(
+        val profiles: List<OverviewProfile>,
+        val timestamp: Long
+    )
+
     private val profileDetailCache = object : LinkedHashMap<String, CachedProfileEntry>(20, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, CachedProfileEntry>?): Boolean {
             return size > 25
         }
     }
 
+    private val relationProfilesMemoryCache = mutableMapOf<RelationListType, CachedRelationProfilesEntry>()
+
     companion object {
         private const val PROFILE_CACHE_TTL_MS = 10 * 60 * 1000L // 10 minutes
+        private const val RELATION_CACHE_TTL_MS = 5 * 60 * 1000L // 5 minutes
     }
 
     private val _uiState = MutableStateFlow(
@@ -883,14 +891,30 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(selectedSona = sona) }
     }
 
-    fun loadRelationProfiles(type: RelationListType) {
+    fun loadRelationProfiles(type: RelationListType, forceRefresh: Boolean = false) {
+        val now = System.currentTimeMillis()
+        val memCached = relationProfilesMemoryCache[type]
+        val isMemFresh = memCached != null && (now - memCached.timestamp < RELATION_CACHE_TTL_MS)
+
+        // Determine if we have cached data to show immediately
+        val cachedToShow = memCached?.profiles
+            ?: authManager.getCachedRelationProfiles(type, RELATION_CACHE_TTL_MS)
+            ?: authManager.getAnyCachedRelationProfiles(type).takeIf { it.isNotEmpty() }
+
         _uiState.update {
             it.copy(
                 relationListType = type,
-                isLoadingRelationProfiles = true,
+                relationProfiles = cachedToShow ?: it.relationProfiles,
+                isLoadingRelationProfiles = cachedToShow == null || forceRefresh,
                 relationProfilesError = null
             )
         }
+
+        // If memory cache is fresh and forceRefresh is false, no need to query network
+        if (isMemFresh && !forceRefresh) {
+            return
+        }
+
         viewModelScope.launch {
             val state = _uiState.value
             val place = state.currentPlace ?: state.currentUser?.profile?.location?.place
@@ -927,19 +951,28 @@ class BarqViewModel(application: Application) : AndroidViewModel(application) {
                         (fetched + fromCached.filterNot { it.uuid in seen }).sortedBy { it.distanceKmForSort }
                     }
                 }
+                relationProfilesMemoryCache[type] = CachedRelationProfilesEntry(merged, System.currentTimeMillis())
+                authManager.saveCachedRelationProfiles(type, merged)
+
                 _uiState.update {
-                    it.copy(
-                        isLoadingRelationProfiles = false,
-                        relationProfiles = merged,
-                        relationProfilesError = null
-                    )
+                    if (it.relationListType == type) {
+                        it.copy(
+                            isLoadingRelationProfiles = false,
+                            relationProfiles = merged,
+                            relationProfilesError = null
+                        )
+                    } else it
                 }
             }.onFailure { err ->
                 _uiState.update {
-                    it.copy(
-                        isLoadingRelationProfiles = false,
-                        relationProfilesError = err.message ?: str(R.string.nearby_error_fetch_profiles)
-                    )
+                    if (it.relationListType == type) {
+                        it.copy(
+                            isLoadingRelationProfiles = false,
+                            relationProfilesError = if (cachedToShow.isNullOrEmpty()) {
+                                err.message ?: str(R.string.nearby_error_fetch_profiles)
+                            } else null
+                        )
+                    } else it
                 }
             }
         }

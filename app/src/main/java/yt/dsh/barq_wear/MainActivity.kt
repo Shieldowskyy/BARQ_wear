@@ -362,7 +362,7 @@ fun BarqWearApp(viewModel: BarqViewModel) {
                         navController.navigate("profile/$uuid")
                     },
                     onRefresh = {
-                        viewModel.loadRelationProfiles(uiState.relationListType)
+                        viewModel.loadRelationProfiles(uiState.relationListType, forceRefresh = true)
                     }
                 )
             }
